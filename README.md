@@ -1,5 +1,4 @@
-# countries-mosaics
-Mosaic script for countries
+# Mosaic script for countries
 
 - Argentina
 - Bolívia
