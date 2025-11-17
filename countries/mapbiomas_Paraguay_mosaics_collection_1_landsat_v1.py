@@ -150,7 +150,6 @@ bufferSize = 100
 # Year and satellite combinations to process
 # Format: [year, satellite_code]
 yearsSat = [
-    [2025, 'l9'],
     # [2024, 'l8'],
     # [2024, 'l9'],
     # [2023, 'l9'],
