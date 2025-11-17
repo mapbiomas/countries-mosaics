@@ -3,6 +3,8 @@
 - Argentina
 - Bolívia
 - Brazil
+  - Landsat
+  - Sentinel
 - Colômbia
 - India
 - DRC
