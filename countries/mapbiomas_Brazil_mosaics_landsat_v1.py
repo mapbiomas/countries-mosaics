@@ -95,14 +95,6 @@ dataFilter = {
 # These are standardized Brazilian cartographic grid codes
 gridNames = {
     "AMAZONIA": [
-        # teste
-        # "SC-21-X-C",
-        # "SB-20-Z-B", "SB-20-Z-C", "SB-20-Z-D", "SB-21-V-D",
-        # "SB-21-X-C", "SB-21-X-D", "SB-21-Y-A", "SB-21-Y-B",
-        # "SB-21-Y-C", "SB-21-Y-D", "SB-21-Z-A", "SB-21-Z-B",
-        # "SB-21-Z-C", "SB-21-Z-D", "SC-20-X-A", "SC-20-X-B",
-        # "SC-21-V-B", "SC-21-X-A", "SC-21-X-B"
-        # #
         # Complete list of grid codes for the Amazon biome
         "SB-23-V-D", "SB-23-X-A", "SB-23-V-B", "SA-23-Y-D",
         "SA-23-Z-C", "SA-23-Z-B", "SA-23-X-C", "SA-23-Z-A",
@@ -249,38 +241,37 @@ gridNames = {
         "SB-24-X-C", "SA-24-Y-B", "SA-24-Y-A"
     ],
     "MATAATLANTICA": [
-        "SC-20-Y-A" # carta falsa para teste
-        # Complete list of Mata Atlântica grids (commented out)
-        # "SG-23-V-B", "SF-23-Y-D", "SF-23-Z-C", "SF-24-Y-C",
-        # "SF-23-Z-D", "SF-23-Z-B", "SF-23-X-D", "SF-24-Y-A",
-        # "SF-23-X-C", "SF-23-Z-A", "SF-23-Y-B", "SF-23-V-D",
-        # "SF-23-X-A", "SF-23-V-B", "SE-23-Y-D", "SE-23-Z-C",
-        # "SF-23-X-B", "SE-23-Z-D", "SE-23-Z-A", "SE-23-X-D",
-        # "SE-23-Z-B", "SE-23-X-B", "SE-24-Y-C", "SE-24-Y-A",
-        # "SE-24-V-C", "SE-24-Y-B", "SE-24-V-D", "SE-24-Y-D",
-        # "SF-24-V-A", "SF-24-V-B", "SF-24-V-C", "SB-25-V-C",
-        # "SB-25-Y-A", "SB-25-Y-C", "SC-25-V-A", "SC-25-V-C",
-        # "SC-24-X-D", "SC-24-Z-B", "SC-24-Z-D", "SC-24-X-B",
-        # "SC-24-Z-A", "SC-24-Z-C", "SD-24-X-A", "SC-24-Y-D",
-        # "SD-24-V-B", "SD-24-X-C", "SD-24-Z-C", "SE-24-X-A",
-        # "SE-24-V-B", "SD-24-Y-D", "SD-24-Y-B", "SD-24-Z-A",
-        # "SD-24-V-D", "SD-24-V-C", "SD-24-Y-A", "SD-24-Y-C",
-        # "SE-24-V-A", "SD-23-Z-D", "SE-22-X-D", "SE-22-Y-B",
-        # "SH-21-X-D", "SH-21-X-B", "SG-21-Z-D", "SG-21-X-D",
-        # "SG-21-X-B", "SF-21-Z-D", "SF-21-Z-B", "SF-21-X-D",
-        # "SF-22-V-C", "SF-22-Y-A", "SF-22-Y-C", "SF-22-V-D",
-        # "SF-22-V-B", "SF-22-Y-B", "SF-22-Y-D", "SF-22-X-C",
-        # "SF-22-Z-A", "SF-22-Z-C", "SF-22-X-A", "SE-22-Z-C",
-        # "SE-22-Z-A", "SE-22-Y-D", "SE-22-Z-B", "SE-22-Z-D",
-        # "SF-22-X-B", "SE-23-Y-C", "SF-23-V-A", "SF-23-V-C",
-        # "SF-23-Y-A", "SF-22-X-D", "SF-22-Z-B", "SF-22-Z-D",
-        # "SG-22-X-A", "SG-22-X-B", "SG-22-X-C", "SG-22-X-D",
-        # "SF-23-Y-C", "SG-23-V-A", "SG-23-V-C", "SG-22-Z-B",
-        # "SG-22-Z-D", "SG-22-Z-A", "SG-22-Z-C", "SH-22-X-A",
-        # "SG-22-Y-D", "SG-22-Y-B", "SH-22-V-B", "SH-22-V-A",
-        # "SG-22-Y-C", "SG-22-Y-A", "SG-22-V-D", "SG-22-V-B",
-        # "SG-22-V-A", "SG-22-V-C", "SH-22-V-C", "SH-22-X-C",
-        # "SH-22-V-D", "SH-22-X-B", "SH-22-X-D"
+        # Complete list of Mata Atlântica grids
+        "SG-23-V-B", "SF-23-Y-D", "SF-23-Z-C", "SF-24-Y-C",
+        "SF-23-Z-D", "SF-23-Z-B", "SF-23-X-D", "SF-24-Y-A",
+        "SF-23-X-C", "SF-23-Z-A", "SF-23-Y-B", "SF-23-V-D",
+        "SF-23-X-A", "SF-23-V-B", "SE-23-Y-D", "SE-23-Z-C",
+        "SF-23-X-B", "SE-23-Z-D", "SE-23-Z-A", "SE-23-X-D",
+        "SE-23-Z-B", "SE-23-X-B", "SE-24-Y-C", "SE-24-Y-A",
+        "SE-24-V-C", "SE-24-Y-B", "SE-24-V-D", "SE-24-Y-D",
+        "SF-24-V-A", "SF-24-V-B", "SF-24-V-C", "SB-25-V-C",
+        "SB-25-Y-A", "SB-25-Y-C", "SC-25-V-A", "SC-25-V-C",
+        "SC-24-X-D", "SC-24-Z-B", "SC-24-Z-D", "SC-24-X-B",
+        "SC-24-Z-A", "SC-24-Z-C", "SD-24-X-A", "SC-24-Y-D",
+        "SD-24-V-B", "SD-24-X-C", "SD-24-Z-C", "SE-24-X-A",
+        "SE-24-V-B", "SD-24-Y-D", "SD-24-Y-B", "SD-24-Z-A",
+        "SD-24-V-D", "SD-24-V-C", "SD-24-Y-A", "SD-24-Y-C",
+        "SE-24-V-A", "SD-23-Z-D", "SE-22-X-D", "SE-22-Y-B",
+        "SH-21-X-D", "SH-21-X-B", "SG-21-Z-D", "SG-21-X-D",
+        "SG-21-X-B", "SF-21-Z-D", "SF-21-Z-B", "SF-21-X-D",
+        "SF-22-V-C", "SF-22-Y-A", "SF-22-Y-C", "SF-22-V-D",
+        "SF-22-V-B", "SF-22-Y-B", "SF-22-Y-D", "SF-22-X-C",
+        "SF-22-Z-A", "SF-22-Z-C", "SF-22-X-A", "SE-22-Z-C",
+        "SE-22-Z-A", "SE-22-Y-D", "SE-22-Z-B", "SE-22-Z-D",
+        "SF-22-X-B", "SE-23-Y-C", "SF-23-V-A", "SF-23-V-C",
+        "SF-23-Y-A", "SF-22-X-D", "SF-22-Z-B", "SF-22-Z-D",
+        "SG-22-X-A", "SG-22-X-B", "SG-22-X-C", "SG-22-X-D",
+        "SF-23-Y-C", "SG-23-V-A", "SG-23-V-C", "SG-22-Z-B",
+        "SG-22-Z-D", "SG-22-Z-A", "SG-22-Z-C", "SH-22-X-A",
+        "SG-22-Y-D", "SG-22-Y-B", "SH-22-V-B", "SH-22-V-A",
+        "SG-22-Y-C", "SG-22-Y-A", "SG-22-V-D", "SG-22-V-B",
+        "SG-22-V-A", "SG-22-V-C", "SH-22-V-C", "SH-22-X-C",
+        "SH-22-V-D", "SH-22-X-B", "SH-22-X-D"
     ],
     "PANTANAL": [
         # Grid codes for Pantanal biome
