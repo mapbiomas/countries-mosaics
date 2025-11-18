@@ -132,11 +132,11 @@ landsatIds = {
 
 # Output asset collections for each Landsat sensor
 outputCollections = {
-    'l4': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/PARAGUAY/mosaics-1',
-    'l5': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/PARAGUAY/mosaics-1',
-    'l7': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/PARAGUAY/mosaics-1',
-    'l8': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/PARAGUAY/mosaics-1',
-    'l9': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/PARAGUAY/mosaics-1'
+    'l4': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-1',
+    'l5': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-1',
+    'l7': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-1',
+    'l8': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-1',
+    'l9': 'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-1'
 }
 
 # Buffer size in meters to expand grid boundaries (reduces edge effects)
