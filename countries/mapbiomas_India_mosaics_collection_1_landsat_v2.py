@@ -69,47 +69,113 @@ dataFilter = {
     },
 }
 
-# Grid names (1:250,000 map sheets) covering Paraguay
-# Currently only SE-20-Z-C is active; 
+# Grid names (1:250,000 map sheets) covering India
 gridNames = {
-    "INDIA":[ 
-    "NF-42-V-B","NB-46-X-A","NB-46-X-C","NC-43-V-A","NC-43-V-C","NC-43-V-D","NC-43-X-A","NC-43-X-B",
-    "NC-43-X-C","NC-43-X-D","NC-43-Y-C","NC-43-Z-A","NC-43-Z-B","NC-43-Z-D","NC-44-V-A","NC-44-V-B",
-    "NC-44-V-C","NC-44-V-D","NC-44-Y-A","NC-44-Y-C","NC-46-V-B","NC-46-V-D","NC-46-X-A","NC-46-Y-B",
-    "NC-46-Z-C","ND-43-V-A","ND-43-V-B","ND-43-V-D","ND-43-X-A","ND-43-X-B","ND-43-X-C","ND-43-X-D",
-    "ND-43-Y-B","ND-43-Y-D","ND-43-Z-A","ND-43-Z-B","ND-43-Z-C","ND-43-Z-D","ND-44-V-A","ND-44-V-B",
-    "ND-44-V-C","ND-44-V-D","ND-44-X-A","ND-44-Y-A","ND-44-Y-B","ND-44-Y-C","ND-44-Y-D","ND-46-Y-B",
-    "ND-46-Y-D","ND-46-Z-A","ND-46-Z-C","NE-43-V-A","NE-43-V-B","NE-43-V-C","NE-43-V-D","NE-43-X-A",
-    "NE-43-X-B","NE-43-X-C","NE-43-X-D","NE-43-Y-A","NE-43-Y-B","NE-43-Y-C","NE-43-Y-D","NE-43-Z-A",
-    "NE-43-Z-B","NE-43-Z-C","NE-43-Z-D","NE-44-V-A","NE-44-V-B","NE-44-V-C","NE-44-V-D","NE-44-X-A",
-    "NE-44-X-B","NE-44-X-C","NE-44-X-D","NE-44-Y-A","NE-44-Y-B","NE-44-Y-C","NE-44-Y-D","NE-44-Z-A",
-    "NE-44-Z-B","NE-44-Z-C","NE-45-V-A","NE-45-V-B","NE-45-V-C","NF-42-V-D","NF-42-X-A","NF-42-X-B",
-    "NF-42-X-C","NF-42-X-D","NF-42-Z-A","NF-42-Z-B","NF-42-Z-C","NF-42-Z-D","NF-43-V-A","NF-43-V-B",
-    "NF-43-V-C","NF-43-V-D","NF-43-X-A","NF-43-X-B","NF-43-X-C","NF-43-X-D","NF-43-Y-A","NF-43-Y-B",
-    "NF-43-Y-C","NF-43-Y-D","NF-43-Z-A","NF-43-Z-B","NF-43-Z-C","NF-43-Z-D","NF-44-V-A","NF-44-V-B",
-    "NF-44-V-C","NF-44-V-D","NF-44-X-A","NF-44-X-B","NF-44-X-C","NF-44-X-D","NF-44-Y-A","NF-44-Y-B",
-    "NF-44-Y-C","NF-44-Y-D","NF-44-Z-A","NF-44-Z-B","NF-44-Z-C","NF-44-Z-D","NF-45-V-A","NF-45-V-B",
-    "NF-45-V-C","NF-45-V-D","NF-45-X-A","NF-45-X-B","NF-45-X-C","NF-45-X-D","NF-45-Y-A","NF-45-Y-B",
-    "NF-45-Y-C","NF-45-Y-D","NF-45-Z-A","NF-45-Z-B","NF-45-Z-C","NF-46-V-A","NF-46-V-B","NF-46-V-D",
-    "NF-46-X-A","NF-46-X-C","NF-46-Y-B","NF-46-Z-A","NG-42-X-A","NG-42-X-B","NG-42-X-C","NG-42-X-D",
-    "NG-42-Y-D","NG-42-Z-A","NG-42-Z-B","NG-42-Z-C","NG-42-Z-D","NG-43-V-A","NG-43-V-B","NG-43-V-C",
-    "NG-43-V-D","NG-43-X-A","NG-43-X-B","NG-43-X-C","NG-43-X-D","NG-43-Y-A","NG-43-Y-B","NG-43-Y-C",
-    "NG-43-Y-D","NG-43-Z-A","NG-43-Z-B","NG-43-Z-C","NG-43-Z-D","NG-44-V-A","NG-44-V-B","NG-44-V-C",
-    "NG-44-V-D","NG-44-X-A","NG-44-X-B","NG-44-X-C","NG-44-X-D","NG-44-Y-A","NG-44-Y-B","NG-44-Y-C",
-    "NG-44-Y-D","NG-44-Z-A","NG-44-Z-B","NG-44-Z-C","NG-44-Z-D","NG-45-V-A","NG-45-V-C","NG-45-V-D",
-    "NG-45-X-A","NG-45-X-B","NG-45-X-C","NG-45-X-D","NG-45-Y-A","NG-45-Y-B","NG-45-Y-C","NG-45-Y-D",
-    "NG-45-Z-A","NG-45-Z-B","NG-45-Z-C","NG-45-Z-D","NG-46-V-B","NG-46-V-C","NG-46-V-D","NG-46-X-A",
-    "NG-46-X-B","NG-46-X-C","NG-46-X-D","NG-46-Y-A","NG-46-Y-B","NG-46-Y-C","NG-46-Y-D","NG-46-Z-A",
-    "NG-46-Z-B","NG-46-Z-C","NG-46-Z-D","NG-47-V-A","NH-42-Z-C","NH-42-Z-D","NH-43-V-B","NH-43-V-D",
-    "NH-43-X-A","NH-43-X-B","NH-43-X-C","NH-43-X-D","NH-43-Y-A","NH-43-Y-B","NH-43-Y-C","NH-43-Y-D",
-    "NH-43-Z-A","NH-43-Z-B","NH-43-Z-C","NH-43-Z-D","NH-44-V-A","NH-44-V-B","NH-44-V-C","NH-44-V-D",
-    "NH-44-X-C","NH-44-Y-A","NH-44-Y-B","NH-44-Y-C","NH-44-Y-D","NH-44-Z-C","NH-45-Z-C","NH-45-Z-D",
-    "NH-46-Y-D","NH-46-Z-A","NH-46-Z-B","NH-46-Z-C","NH-46-Z-D","NH-47-Y-A","NH-47-Y-C","NI-43-V-A",
-    "NI-43-V-B","NI-43-V-C","NI-43-V-D","NI-43-X-A","NI-43-X-B","NI-43-X-C","NI-43-X-D","NI-43-Y-B",
-    "NI-43-Y-D","NI-43-Z-A","NI-43-Z-B","NI-43-Z-C","NI-43-Z-D","NI-44-V-A","NI-44-V-B","NI-44-V-C",
-    "NI-44-V-D","NI-44-Y-A","NI-44-Y-C","NI-44-Y-D","NJ-43-Y-B","NJ-43-Y-C","NJ-43-Y-D","NJ-43-Z-A",
-    "NJ-43-Z-C","NJ-43-Z-D",
+    "INDIA":
+    [
+    "NC-43-V-A",
+    # "NB-46-X-A",
+    # "NB-46-X-C",
+    # "NC-43-V-C",
+    # "NC-43-V-D",
+    # "NC-43-Y-C",
+    # "NC-46-V-B",
+    # "NC-46-V-D",
+    # "NC-46-X-A",
+    # "NC-46-Y-B",
+    # "NC-46-Z-C",
+    # "ND-43-V-A",
+    # "ND-46-Y-B",
+    # "ND-46-Y-D",
+    # "ND-46-Z-A",
+    # "ND-46-Z-C",
+    # "NF-46-V-A",
+    # "NF-46-V-B",
+    # "NF-46-V-D",
+    # "NF-46-X-A",
+    # "NF-46-X-C",
+    # "NF-46-Y-B",
+    # "NF-46-Z-A",
+    # "NG-46-V-B",
+    # "NG-46-V-C",
+    # "NG-46-V-D",
+    # "NG-46-X-A",
+    # "NG-46-X-B",
+    # "NG-46-X-C",
+    # "NG-46-X-D",
+    # "NG-46-Y-A",
+    # "NG-46-Y-B",
+    # "NG-46-Y-C",
+    # "NG-46-Y-D",
+    # "NG-46-Z-A",
+    # "NG-46-Z-B",
+    # "NG-46-Z-C",
+    # "NG-46-Z-D",
+    # "NG-47-V-A",
+    # "NH-46-Y-D",
+    # "NH-46-Z-A",
+    # "NH-46-Z-B",
+    # "NH-46-Z-C",
+    # "NH-46-Z-D",
+    # "NH-47-Y-A",
+    # "NH-47-Y-C",
+    # "NI-43-V-A",
+    # "NI-43-V-B",
+    # "NI-43-V-C",
+    # "NI-43-V-D",
+    # "NI-43-X-A",
+    # "NI-43-X-B",
+    # "NI-43-X-C",
+    # "NI-43-X-D",
+    # "NI-44-V-A",
+    # "NI-44-V-B",
+    # "NI-44-V-C",
+    # "NI-44-V-D",
+    # "NJ-43-Y-B",
+    # "NJ-43-Y-C",
+    # "NJ-43-Y-D",
+    # "NJ-43-Z-A",
+    # "NJ-43-Z-C",
+    # "NJ-43-Z-D"
     ]
+    # [ 
+    # "NF-42-V-B","NB-46-X-A","NB-46-X-C","NC-43-V-A","NC-43-V-C","NC-43-V-D","NC-43-X-A","NC-43-X-B",
+    # "NC-43-X-C","NC-43-X-D","NC-43-Y-C","NC-43-Z-A","NC-43-Z-B","NC-43-Z-D","NC-44-V-A","NC-44-V-B",
+    # "NC-44-V-C","NC-44-V-D","NC-44-Y-A","NC-44-Y-C","NC-46-V-B","NC-46-V-D","NC-46-X-A","NC-46-Y-B",
+    # "NC-46-Z-C","ND-43-V-A","ND-43-V-B","ND-43-V-D","ND-43-X-A","ND-43-X-B","ND-43-X-C","ND-43-X-D",
+    # "ND-43-Y-B","ND-43-Y-D","ND-43-Z-A","ND-43-Z-B","ND-43-Z-C","ND-43-Z-D","ND-44-V-A","ND-44-V-B",
+    # "ND-44-V-C","ND-44-V-D","ND-44-X-A","ND-44-Y-A","ND-44-Y-B","ND-44-Y-C","ND-44-Y-D","ND-46-Y-B",
+    # "ND-46-Y-D","ND-46-Z-A","ND-46-Z-C","NE-43-V-A","NE-43-V-B","NE-43-V-C","NE-43-V-D","NE-43-X-A",
+    # "NE-43-X-B","NE-43-X-C","NE-43-X-D","NE-43-Y-A","NE-43-Y-B","NE-43-Y-C","NE-43-Y-D","NE-43-Z-A",
+    # "NE-43-Z-B","NE-43-Z-C","NE-43-Z-D","NE-44-V-A","NE-44-V-B","NE-44-V-C","NE-44-V-D","NE-44-X-A",
+    # "NE-44-X-B","NE-44-X-C","NE-44-X-D","NE-44-Y-A","NE-44-Y-B","NE-44-Y-C","NE-44-Y-D","NE-44-Z-A",
+    # "NE-44-Z-B","NE-44-Z-C","NE-45-V-A","NE-45-V-B","NE-45-V-C","NF-42-V-D","NF-42-X-A","NF-42-X-B",
+    # "NF-42-X-C","NF-42-X-D","NF-42-Z-A","NF-42-Z-B","NF-42-Z-C","NF-42-Z-D","NF-43-V-A","NF-43-V-B",
+    # "NF-43-V-C","NF-43-V-D","NF-43-X-A","NF-43-X-B","NF-43-X-C","NF-43-X-D","NF-43-Y-A","NF-43-Y-B",
+    # "NF-43-Y-C","NF-43-Y-D","NF-43-Z-A","NF-43-Z-B","NF-43-Z-C","NF-43-Z-D","NF-44-V-A","NF-44-V-B",
+    # "NF-44-V-C","NF-44-V-D","NF-44-X-A","NF-44-X-B","NF-44-X-C","NF-44-X-D","NF-44-Y-A","NF-44-Y-B",
+    # "NF-44-Y-C","NF-44-Y-D","NF-44-Z-A","NF-44-Z-B","NF-44-Z-C","NF-44-Z-D","NF-45-V-A","NF-45-V-B",
+    # "NF-45-V-C","NF-45-V-D","NF-45-X-A","NF-45-X-B","NF-45-X-C","NF-45-X-D","NF-45-Y-A","NF-45-Y-B",
+    # "NF-45-Y-C","NF-45-Y-D","NF-45-Z-A","NF-45-Z-B","NF-45-Z-C","NF-46-V-A","NF-46-V-B","NF-46-V-D",
+    # "NF-46-X-A","NF-46-X-C","NF-46-Y-B","NF-46-Z-A","NG-42-X-A","NG-42-X-B","NG-42-X-C","NG-42-X-D",
+    # "NG-42-Y-D","NG-42-Z-A","NG-42-Z-B","NG-42-Z-C","NG-42-Z-D","NG-43-V-A","NG-43-V-B","NG-43-V-C",
+    # "NG-43-V-D","NG-43-X-A","NG-43-X-B","NG-43-X-C","NG-43-X-D","NG-43-Y-A","NG-43-Y-B","NG-43-Y-C",
+    # "NG-43-Y-D","NG-43-Z-A","NG-43-Z-B","NG-43-Z-C","NG-43-Z-D","NG-44-V-A","NG-44-V-B","NG-44-V-C",
+    # "NG-44-V-D","NG-44-X-A","NG-44-X-B","NG-44-X-C","NG-44-X-D","NG-44-Y-A","NG-44-Y-B","NG-44-Y-C",
+    # "NG-44-Y-D","NG-44-Z-A","NG-44-Z-B","NG-44-Z-C","NG-44-Z-D","NG-45-V-A","NG-45-V-C","NG-45-V-D",
+    # "NG-45-X-A","NG-45-X-B","NG-45-X-C","NG-45-X-D","NG-45-Y-A","NG-45-Y-B","NG-45-Y-C","NG-45-Y-D",
+    # "NG-45-Z-A","NG-45-Z-B","NG-45-Z-C","NG-45-Z-D","NG-46-V-B","NG-46-V-C","NG-46-V-D","NG-46-X-A",
+    # "NG-46-X-B","NG-46-X-C","NG-46-X-D","NG-46-Y-A","NG-46-Y-B","NG-46-Y-C","NG-46-Y-D","NG-46-Z-A",
+    # "NG-46-Z-B","NG-46-Z-C","NG-46-Z-D","NG-47-V-A","NH-42-Z-C","NH-42-Z-D","NH-43-V-B","NH-43-V-D",
+    # "NH-43-X-A","NH-43-X-B","NH-43-X-C","NH-43-X-D","NH-43-Y-A","NH-43-Y-B","NH-43-Y-C","NH-43-Y-D",
+    # "NH-43-Z-A","NH-43-Z-B","NH-43-Z-C","NH-43-Z-D","NH-44-V-A","NH-44-V-B","NH-44-V-C","NH-44-V-D",
+    # "NH-44-X-C","NH-44-Y-A","NH-44-Y-B","NH-44-Y-C","NH-44-Y-D","NH-44-Z-C","NH-45-Z-C","NH-45-Z-D",
+    # "NH-46-Y-D","NH-46-Z-A","NH-46-Z-B","NH-46-Z-C","NH-46-Z-D","NH-47-Y-A","NH-47-Y-C","NI-43-V-A",
+    # "NI-43-V-B","NI-43-V-C","NI-43-V-D","NI-43-X-A","NI-43-X-B","NI-43-X-C","NI-43-X-D","NI-43-Y-B",
+    # "NI-43-Y-D","NI-43-Z-A","NI-43-Z-B","NI-43-Z-C","NI-43-Z-D","NI-44-V-A","NI-44-V-B","NI-44-V-C",
+    # "NI-44-V-D","NI-44-Y-A","NI-44-Y-C","NI-44-Y-D","NJ-43-Y-B","NJ-43-Y-C","NJ-43-Y-D","NJ-43-Z-A",
+    # "NJ-43-Z-C","NJ-43-Z-D",
+    # ]
 }
 
 # Google Earth Engine Collection IDs for Landsat satellites (Collection 2, Tier 1, Level 2)
@@ -146,8 +212,8 @@ bufferSize = 100
 # Format: [year, satellite_code]
 yearsSat = [
     # [2025, 'l9'],
-    # [2024, 'l8'],
-    [2024, 'l9'],
+    [2024, 'l8'],
+    # [2024, 'l9'],
     # [2023, 'l9'],
     # [2023, 'l8'],
     # [2022, 'l8'],
@@ -437,6 +503,8 @@ for territoryName in territoryNames:
 
                         # Standardize band names to consistent naming convention
                         bands = getBandNames(satellite + 'c2')
+                        
+                        # Rename collection image bands
                         collection = collection.select(
                             bands['bandNames'],
                             bands['newNames']
@@ -492,9 +560,7 @@ for territoryName in territoryNames:
                         # Add texture and topography bands
                         mosaic = getEntropyG(mosaic)  # GLCM entropy texture
                         mosaic = getSlope(mosaic)     # Terrain slope
-                        
-                        # Set appropriate data types for each band
-                        mosaic = setBandTypes(mosaic, mtype="countries")
+                        mosaic = setBandTypes(mosaic)
 
                         # Add metadata properties
                         mosaic = mosaic.set('year', year)
