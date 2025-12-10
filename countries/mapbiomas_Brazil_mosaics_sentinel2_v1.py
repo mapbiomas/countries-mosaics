@@ -16,10 +16,10 @@ from modules.Mosaic import *
 from modules.DataType import *
 from modules.BandNames import *
 from modules.Collection import *
-from modules.SmaAndNdfi import *  # Spectral Mixture Analysis and Normalized Difference Fraction Index
+from modules.SmaAndNdfi import * 
 from modules.Miscellaneous import *
 from modules.SpectralIndexes import *
-from modules.CloudAndShadowMaskS2 import *  # Cloud and shadow masking for Sentinel-2
+from modules.CloudAndShadowMaskS2 import * 
 
 # Initialize Google Earth Engine with the MapBiomas Brazil project
 ee.Initialize(project='mapbiomas-brazil')
