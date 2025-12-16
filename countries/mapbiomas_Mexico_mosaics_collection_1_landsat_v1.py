@@ -1,8 +1,8 @@
 """
-Google Earth Engine Landsat Mosaic Generator for India
+Google Earth Engine Landsat Mosaic Generator for Mexico
 ===========================================================
 
-This script generates annual Landsat mosaics for India using Google Earth Engine.
+This script generates annual Landsat mosaics for Mexico using Google Earth Engine.
 It processes Landsat Collection 2 imagery (Landsat 4-9) with cloud/shadow masking,
 spectral indices calculation, and SMA (Spectral Mixture Analysis) to create
 analysis-ready composite images organized by grid tiles.
