@@ -9,6 +9,7 @@
   - [**Sentinel2**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Brazil_mosaics_sentinel2_v1.py)
 - [**Chile**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Chile_mosaics_landsat_v1.py)
 - Colômbia
+- [**Dem. Rep. Congo**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Chile_mosaics_landsat_v1.py)
 - Ecuador
 - Escudo das Guianas (Guiana, Guiana Francesa e Suriname)
 - [**India**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_India_mosaics_collection_1_landsat_v2.py)
