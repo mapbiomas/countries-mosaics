@@ -2,7 +2,7 @@
 - Argentina
   - Chaco
   - Pampa
-  - Patagonia and Cuyo (https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Argentina_mosaics_landsat_v1.py)
+  - [**Patagonia and Cuyo**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Argentina_mosaics_landsat_v1.py)
 - Bolívia
 - Brazil
   - [**Landsat**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Brazil_mosaics_landsat_v1.py)
