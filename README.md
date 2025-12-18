@@ -13,6 +13,7 @@
 - Ecuador
 - Escudo das Guianas (Guiana, Guiana Francesa e Suriname)
 - [**India**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_India_mosaics_collection_1_landsat_v2.py)
+- [**Indonesia**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Indonesia_mosaics_collection_1_landsat_v1.py)
 - [**Mexico**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Mexico_mosaics_collection_1_landsat_v1.py)
 - [**Paraguay**](https://github.com/mapbiomas/countries-mosaics/blob/main/countries/mapbiomas_Paraguay_mosaics_collection_1_landsat_v1.py)
 - Peru
