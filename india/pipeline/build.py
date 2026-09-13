@@ -84,6 +84,29 @@ def cell_geometry(cell_name):
     return ee.Geometry.Polygon([ring], 'EPSG:4326', False)
 
 
+def cache_cell_geometries(cell_names):
+    """Fill the cell-geometry cache with one Earth Engine request.
+
+    A production preflight needs the geometry of many cells to ask which
+    cell-years have source scenes.  Fetching those bounds one cell at a time
+    would merely move the resume bottleneck from exports to preflight.
+    """
+    missing = sorted(set(cell_names) - set(_CELL_BOUNDS))
+    if not missing:
+        return
+    features = (ee.FeatureCollection(C.GRID_ASSET)
+                .filter(ee.Filter.inList('name', missing))
+                .map(lambda feature: feature.setGeometry(
+                    feature.geometry().buffer(C.GRID_BUFFER_M).bounds())))
+    for feature in features.getInfo()['features']:
+        name = feature['properties']['name']
+        _CELL_BOUNDS[name] = feature['geometry']['coordinates'][0]
+    not_found = set(missing) - set(_CELL_BOUNDS)
+    if not_found:
+        raise ValueError('grid cells missing from {}: {}'.format(
+            C.GRID_ASSET, ', '.join(sorted(not_found))))
+
+
 _REGIONS_MASK = {'checked': False, 'img': None}
 
 
@@ -681,7 +704,8 @@ def _ensure_collection(collection_path, verbose=True):
 def export(cell_name, year, variant='c2_only',
            collection_path=None,
            verbose=True, lite=False, label=None,
-           skip_existing=True, shard_size=None, existing=None):
+           skip_existing=True, shard_size=None, existing=None,
+           active_descriptions=None, known_has_scenes=None):
     """
     Queue one export task. Returns the task, or None if skipped.
 
@@ -694,6 +718,14 @@ def export(cell_name, year, variant='c2_only',
     membership here instead of making a getAsset round-trip per call -- the
     resume loop walks all 11,320 cell-years, so the per-call check is the
     slow part. None keeps the per-call getAsset check.
+
+    active_descriptions: task descriptions known to be PENDING/RUNNING at
+    the start of a production sitting.  The production runner supplies this
+    snapshot so the export loop makes no task-list request of its own.
+
+    known_has_scenes: result of the production source preflight.  True skips
+    the otherwise per-export ``size().getInfo()`` zero-scene probe; None
+    retains the safe standalone-export behaviour.
 
     shard_size: Earth Engine shardSize in pixels (default None = EE's 256).
     The first lever against the Era B per-shard out-of-memory (register C25:
@@ -765,7 +797,9 @@ def export(cell_name, year, variant='c2_only',
                     if attempt == 2:
                         raise               # persistent non-404: surface it
                     # transient: one retry before deciding
-        if name.replace('-', '_') in _active_export_descriptions():
+        active = (_active_export_descriptions() if active_descriptions is None
+                  else active_descriptions)
+        if name.replace('-', '_') in active:
             if verbose:
                 print('    already exporting, skipped {}'.format(name))
             return None
@@ -783,14 +817,15 @@ def export(cell_name, year, variant='c2_only',
     # cell-years are like this (single-track archive gaps). One cheap
     # client-side count here turns that into a named, logged skip: the
     # honest gap IS the product for that cell-year.
-    _mode = VARIANTS[variant][4]
-    _probe, _era = sources.build(cell_geometry(cell_name), year, mode=_mode)
-    n_granules = _probe.size().getInfo()
-    if n_granules == 0:
-        print('    ZERO-SCENE cell-year: no usable granules for {} {} -- '
-              'skipped (honest gap; archive hole, not a failure)'
-              .format(cell_name, year))
-        return None
+    if known_has_scenes is not True:
+        _mode = VARIANTS[variant][4]
+        _probe, _era = sources.build(cell_geometry(cell_name), year, mode=_mode)
+        n_granules = _probe.size().getInfo()
+        if n_granules == 0:
+            print('    ZERO-SCENE cell-year: no usable granules for {} {} -- '
+                  'skipped (honest gap; archive hole, not a failure)'
+                  .format(cell_name, year))
+            return None
 
     mosaic, meta = build_mosaic(cell_name, year, variant, verbose, lite)
 

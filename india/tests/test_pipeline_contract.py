@@ -232,6 +232,28 @@ class ProductionRunSafetyTests(unittest.TestCase):
         self.assertEqual(len(out['queued']), 2)
         self.assertEqual(len(out['failed']), 1)
 
+    def test_preflight_leaves_only_queueable_work_for_export(self):
+        """Completed, active, and no-scene work never enters the export loop."""
+        from unittest import mock
+        from pipeline import run_production as rp
+        with mock.patch.object(rp, 'describe_destination'), \
+             mock.patch.object(rp.build, 'existing_asset_names',
+                               return_value={'A_2019'}), \
+             mock.patch.object(rp, 'active_task_descriptions',
+                               return_value={'B_2019'}), \
+             mock.patch.object(rp, 'available_work',
+                               return_value=([('C', 2019)], [('D', 2019)])), \
+             mock.patch.object(rp.build, 'export', return_value=object()) as exported:
+            out = rp.run(confirm=rp.CONFIRM_PHRASE,
+                         cells=['A', 'B', 'C', 'D'], first_year=2019,
+                         last_year=2019, collection_path='projects/x/assets/y',
+                         verbose=False)
+        exported.assert_called_once_with(
+            'C', 2019, collection_path='projects/x/assets/y', verbose=False,
+            existing={'A_2019'}, active_descriptions={'B_2019'},
+            known_has_scenes=True)
+        self.assertEqual(out['skipped'], 3)
+
 
 class CollectionDescriptionTests(unittest.TestCase):
     """The collection has to describe itself. Nothing in an export writes
@@ -358,4 +380,3 @@ class ProgressTaskMatchingTests(unittest.TestCase):
                               cells=['NC-43-X-D'], first_year=2019,
                               last_year=2019)
         self.assertEqual(out['finished'], ['NC-43-X-D_2019'])
-

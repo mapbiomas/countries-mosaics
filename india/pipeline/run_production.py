@@ -50,6 +50,18 @@ CONFIRM_PHRASE = 'QUEUE THE NATIONAL RUN'
 # eleven thousand.
 CONSECUTIVE_FAILURE_LIMIT = 20
 
+# One metadata request for every cell-year is needlessly slow.  These batches
+# keep each Earth Engine expression and response modest while still resolving
+# all source availability before the export loop starts.
+SCENE_PROBE_BATCH_SIZE = 250
+
+# The source catalogue does not change from one queueing sitting to the next.
+# Keeping this small manifest means archive gaps are discovered once, rather
+# than being re-checked whenever Earth Engine's task queue fills up.
+SCENE_AVAILABILITY_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data',
+    'source_availability.json')
+
 # Earth Engine will not hold an unlimited number of pending tasks, and the
 # ceiling depends on the account. Rather than guess it, watch for the refusal
 # and stop cleanly when it comes: the run is meant to be done in sittings, and
@@ -115,6 +127,94 @@ def plan(cells=None, first_year=None, last_year=None, strict=False):
     cells = cell_names(strict=strict) if cells is None else list(cells)
     years = range(first, last + 1)
     return [(cell, year) for cell in cells for year in years]
+
+
+def active_task_descriptions():
+    """Descriptions of all exports that Earth Engine is currently working on."""
+    return {
+        operation.get('metadata', {}).get('description', '')
+        for operation in ee.data.listOperations()
+        if operation.get('metadata', {}).get('state') in ('PENDING', 'RUNNING')
+    }
+
+
+def _availability_signature():
+    """Inputs whose change invalidates the local source-availability cache."""
+    return {
+        'grid_asset': C.GRID_ASSET,
+        'grid_buffer_m': C.GRID_BUFFER_M,
+        'scene_cloud_max': C.SCENE_CLOUD_MAX,
+        'landsat_l2': C.ERA_A_L2,
+        'landsat_l1': C.ERA_A_L1,
+    }
+
+
+def _read_availability_cache(path):
+    try:
+        with open(path) as handle:
+            saved = json.load(handle)
+        if saved.get('signature') == _availability_signature():
+            return saved.get('has_scenes', {})
+    except (IOError, ValueError, TypeError):
+        pass
+    return {}
+
+
+def _write_availability_cache(path, has_scenes):
+    """Atomically retain preflight results, including progress after a stop."""
+    temporary = path + '.tmp'
+    with open(temporary, 'w') as handle:
+        json.dump({'signature': _availability_signature(),
+                   'has_scenes': has_scenes}, handle,
+                  sort_keys=True, indent=2)
+        handle.write('\n')
+    os.replace(temporary, path)
+
+
+def available_work(work, batch_size=SCENE_PROBE_BATCH_SIZE,
+                   cache_path=SCENE_AVAILABILITY_FILE):
+    """Split work into source-backed cell-years and genuine archive gaps.
+
+    This is deliberately a preflight, not a check inside ``build.export``.
+    It evaluates source counts in batches and stores the booleans locally, so
+    each cell-year is probed at most once across resumed queueing sittings.
+    Exporting then has no per-cell-year existence, task, or zero-scene checks
+    left to perform.
+    """
+    if batch_size < 1:
+        raise ValueError('batch_size must be positive')
+    has_scenes = _read_availability_cache(cache_path)
+    pending = [item for item in work
+               if build.production_asset_name(*item) not in has_scenes]
+    if not pending:
+        return ([item for item in work
+                 if has_scenes[build.production_asset_name(*item)]],
+                [item for item in work
+                 if not has_scenes[build.production_asset_name(*item)]])
+
+    build.cache_cell_geometries(cell for cell, _year in pending)
+    mode = build.VARIANTS['c2_only'][4]
+    for start in range(0, len(pending), batch_size):
+        batch = pending[start:start + batch_size]
+        probes = []
+        for cell, year in batch:
+            collection, _era = build.sources.build(
+                build.cell_geometry(cell), year, mode=mode)
+            probes.append(ee.Feature(None, {
+                'cell': cell,
+                'year': year,
+                'scene_count': collection.size(),
+            }))
+        result = ee.FeatureCollection(probes).getInfo()['features']
+        for feature in result:
+            props = feature['properties']
+            name = build.production_asset_name(props['cell'], int(props['year']))
+            has_scenes[name] = bool(props['scene_count'])
+        _write_availability_cache(cache_path, has_scenes)
+    return ([item for item in work
+             if has_scenes[build.production_asset_name(*item)]],
+            [item for item in work
+             if not has_scenes[build.production_asset_name(*item)]])
 
 
 def describe_destination(collection_path):
@@ -217,9 +317,9 @@ def run(confirm=None, cells=None, first_year=None, last_year=None,
         print('  stopping after {} queued task(s) this sitting'
               .format(max_tasks))
 
-    # The skip_existing check in build.export used to make one getAsset
-    # round-trip per cell-year -- 11,320 of them on a resume. Fetch the set
-    # of already-landed assets once, so the loop tests membership in memory.
+    # Build the queue once, before doing any costly mosaic construction.
+    # Completed assets and active tasks need no source probe at all; source
+    # availability is then resolved in batches for the remaining candidates.
     try:
         existing = build.existing_asset_names(destination)
     except Exception as e:
@@ -227,19 +327,56 @@ def run(confirm=None, cells=None, first_year=None, last_year=None,
               'per-cell existence check'.format(e))
         existing = None
 
-    queued, skipped, failed = [], 0, []
+    try:
+        active_descriptions = active_task_descriptions()
+    except Exception as e:
+        print('  could not read active tasks ({}); build.export will check '
+              'them as it goes'.format(e))
+        active_descriptions = None
+
+    if existing is None or active_descriptions is None:
+        # Keep the legacy safe path when a preflight dependency is unavailable.
+        queue_work, gaps = work, None
+    else:
+        completed = {(cell, year) for cell, year in work
+                     if build.production_asset_name(cell, year) in existing}
+        active = {(cell, year) for cell, year in work
+                  if build.production_asset_name(cell, year).replace('-', '_')
+                  in active_descriptions}
+        candidates = [item for item in work if item not in completed | active]
+        print('  already finished: {}'.format(len(completed)))
+        print('  already queued:   {}'.format(len(active)))
+        print('  checking scenes:  {}'.format(len(candidates)))
+        try:
+            queue_work, gaps = available_work(candidates)
+            print('  source-backed:    {}'.format(len(queue_work)))
+            print('  archive gaps:     {}'.format(len(gaps)))
+        except Exception as e:
+            print('  could not preflight source scenes ({}); falling back '
+                  'to per-export checks'.format(e))
+            queue_work, gaps = candidates, None
+
+    if gaps is not None:
+        # These are legitimate skips, established before the export loop.
+        skipped = len(completed) + len(active) + len(gaps)
+    else:
+        skipped = 0
+
+    queued, failed = [], []
     consecutive_failures = 0
-    for i, (cell, year) in enumerate(work, 1):
+    for i, (cell, year) in enumerate(queue_work, 1):
         if max_tasks is not None and len(queued) >= max_tasks:
             print('\nreached the {}-task limit; {} of {} cell-years looked '
                   'at. Run this again to continue.'
-                  .format(max_tasks, i - 1, len(work)))
+                  .format(max_tasks, i - 1, len(queue_work)))
             break
         if verbose:
-            print('[{}/{}] {} {}'.format(i, len(work), cell, year))
+            print('[{}/{}] {} {}'.format(i, len(queue_work), cell, year))
         try:
             task = build.export(cell, year, collection_path=destination,
-                                verbose=verbose, existing=existing)
+                                verbose=verbose, existing=existing,
+                                active_descriptions=active_descriptions,
+                                known_has_scenes=(gaps is not None))
         except KeyboardInterrupt:
             print('\nstopped by hand after {} queued task(s). Nothing is '
                   'lost: start again to continue.'.format(len(queued)))
@@ -251,7 +388,7 @@ def run(confirm=None, cells=None, first_year=None, last_year=None,
                 print('{} task(s) were queued this sitting, and {} of {} '
                       'cell-years were looked at. Nothing is lost: let the '
                       'queue drain and run this again to carry on.'
-                      .format(len(queued), i - 1, len(work)))
+                      .format(len(queued), i - 1, len(queue_work)))
                 break
             # One bad cell-year must not end a run of thousands. Record it,
             # keep going, report the list at the end.
