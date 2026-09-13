@@ -651,6 +651,33 @@ def existing_asset_names(collection_path):
     return {i.rsplit('/', 1)[-1] for i in ids}
 
 
+_ENSURED_COLLECTIONS = set()
+
+
+def _ensure_collection(collection_path, verbose=True):
+    """Make `collection_path` exist if needed; memoised to one check per run.
+
+    export() used to ee.data.getAsset(collection_path) on every call -- one
+    more round-trip per cell-year, before the skip check even ran. The
+    destination does not change within a run, so remember which collections
+    have been seen and only touch Earth Engine the first time.
+    """
+    if collection_path in _ENSURED_COLLECTIONS:
+        return
+    try:
+        ee.data.getAsset(collection_path)
+    except Exception:
+        try:
+            ee.data.createAsset({'type': 'IMAGE_COLLECTION'},
+                                collection_path)
+            if verbose:
+                print('    created collection {}'.format(collection_path))
+        except Exception as e:
+            print('    WARNING: could not create {}: {}'
+                  .format(collection_path, e))
+    _ENSURED_COLLECTIONS.add(collection_path)
+
+
 def export(cell_name, year, variant='c2_only',
            collection_path=None,
            verbose=True, lite=False, label=None,
@@ -703,18 +730,10 @@ def export(cell_name, year, variant='c2_only',
 
     # Ensure the destination ImageCollection exists (reviewer find
     # 2026-08-30: a fork's first export died at runtime because nothing
-    # ever created it — createAsset is idempotent-safe here).
-    try:
-        ee.data.getAsset(collection_path)
-    except Exception:
-        try:
-            ee.data.createAsset({'type': 'IMAGE_COLLECTION'},
-                                collection_path)
-            if verbose:
-                print('    created collection {}'.format(collection_path))
-        except Exception as e:
-            print('    WARNING: could not create {}: {}'
-                  .format(collection_path, e))
+    # ever created it — createAsset is idempotent-safe here). Memoised:
+    # the destination does not change within a run, so this is one call
+    # per collection, not one per cell-year.
+    _ensure_collection(collection_path, verbose=verbose)
 
     if skip_existing:
         if existing is not None:
