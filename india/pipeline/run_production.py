@@ -217,6 +217,16 @@ def run(confirm=None, cells=None, first_year=None, last_year=None,
         print('  stopping after {} queued task(s) this sitting'
               .format(max_tasks))
 
+    # The skip_existing check in build.export used to make one getAsset
+    # round-trip per cell-year -- 11,320 of them on a resume. Fetch the set
+    # of already-landed assets once, so the loop tests membership in memory.
+    try:
+        existing = build.existing_asset_names(destination)
+    except Exception as e:
+        print('  could not read existing assets ({}); falling back to a '
+              'per-cell existence check'.format(e))
+        existing = None
+
     queued, skipped, failed = [], 0, []
     consecutive_failures = 0
     for i, (cell, year) in enumerate(work, 1):
@@ -229,7 +239,7 @@ def run(confirm=None, cells=None, first_year=None, last_year=None,
             print('[{}/{}] {} {}'.format(i, len(work), cell, year))
         try:
             task = build.export(cell, year, collection_path=destination,
-                                verbose=verbose)
+                                verbose=verbose, existing=existing)
         except KeyboardInterrupt:
             print('\nstopped by hand after {} queued task(s). Nothing is '
                   'lost: start again to continue.'.format(len(queued)))

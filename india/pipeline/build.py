@@ -637,16 +637,36 @@ def _active_export_descriptions(max_age_s=60):
     return _ACTIVE_TASKS['descs']
 
 
+def existing_asset_names(collection_path):
+    """Basenames of every image already in `collection_path`, in one call.
+
+    The production loop calls export() once per cell-year, and the old
+    skip_existing check made one ee.data.getAsset per cell-year -- 11,320
+    round-trips just to skip what already exists. aggregate_array('system:id')
+    returns the whole list in a single getInfo, so the loop can test
+    membership in memory instead.
+    """
+    ids = (ee.ImageCollection(collection_path)
+           .aggregate_array('system:id').getInfo())
+    return {i.rsplit('/', 1)[-1] for i in ids}
+
+
 def export(cell_name, year, variant='c2_only',
            collection_path=None,
            verbose=True, lite=False, label=None,
-           skip_existing=True, shard_size=None):
+           skip_existing=True, shard_size=None, existing=None):
     """
     Queue one export task. Returns the task, or None if skipped.
 
     skip_existing (adopted from the legacy loop, task #18): an asset already
     present under collection_path is not re-exported, so a crashed or
     interrupted batch resumes cleanly instead of duplicating work.
+
+    existing: a set of asset basenames already in collection_path, fetched
+    once with existing_asset_names(). When given, skip_existing tests
+    membership here instead of making a getAsset round-trip per call -- the
+    resume loop walks all 11,320 cell-years, so the per-call check is the
+    slow part. None keeps the per-call getAsset check.
 
     shard_size: Earth Engine shardSize in pixels (default None = EE's 256).
     The first lever against the Era B per-shard out-of-memory (register C25:
@@ -697,27 +717,35 @@ def export(cell_name, year, variant='c2_only',
                   .format(collection_path, e))
 
     if skip_existing:
-        # 404-AWARE (C26 ruling 7): only a real "not found" means absent.
-        # A transient auth/network error used to read as "not there" and
-        # queue a duplicate task doomed to fail on the existing assetId.
-        asset_id = '{}/{}'.format(collection_path, name)
-        for attempt in (1, 2):
-            try:
-                ee.data.getAsset(asset_id)
+        if existing is not None:
+            # Resuming a run: the set of already-landed assets was fetched
+            # once (existing_asset_names), so membership is in memory.
+            if name in existing:
                 if verbose:
                     print('    exists, skipped {}'.format(name))
                 return None
-            except Exception as e:
-                msg = str(e).lower()
-                # EE's translated EEException drops the HTTP status; the
-                # absence wording is "does not exist or doesn't allow this
-                # operation" (observed 2026-08-14)
-                if ('does not exist' in msg or 'not found' in msg
-                        or '404' in msg):
-                    break               # genuinely absent: proceed to export
-                if attempt == 2:
-                    raise               # persistent non-404: surface it
-                # transient: one retry before deciding
+        else:
+            # 404-AWARE (C26 ruling 7): only a real "not found" means absent.
+            # A transient auth/network error used to read as "not there" and
+            # queue a duplicate task doomed to fail on the existing assetId.
+            asset_id = '{}/{}'.format(collection_path, name)
+            for attempt in (1, 2):
+                try:
+                    ee.data.getAsset(asset_id)
+                    if verbose:
+                        print('    exists, skipped {}'.format(name))
+                    return None
+                except Exception as e:
+                    msg = str(e).lower()
+                    # EE's translated EEException drops the HTTP status; the
+                    # absence wording is "does not exist or doesn't allow this
+                    # operation" (observed 2026-08-14)
+                    if ('does not exist' in msg or 'not found' in msg
+                            or '404' in msg):
+                        break               # genuinely absent: proceed to export
+                    if attempt == 2:
+                        raise               # persistent non-404: surface it
+                    # transient: one retry before deciding
         if name.replace('-', '_') in _active_export_descriptions():
             if verbose:
                 print('    already exporting, skipped {}'.format(name))
