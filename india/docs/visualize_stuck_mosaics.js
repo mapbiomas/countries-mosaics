@@ -1,0 +1,49 @@
+// Visualizacao dos mosaicos que passaram pelo processo de travamento
+// (416 celulas-anos, 49 celulas unicas — ver docs/stuck_mosaics_report.md)
+
+var GRID = "projects/mapbiomas-india/assets/mosaic_v2_inputs/grid";
+var COLLECTION = "projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-2";
+
+var STUCK_CELLS = ["NF-44-Z-B", "NF-44-Z-C", "NF-44-Z-D", "NF-45-V-A", "NF-45-V-B", "NF-45-V-C", "NF-45-V-D", "NF-45-X-A", "NF-45-X-B", "NF-45-X-D", "NG-42-X-B", "NG-42-X-C", "NG-42-Z-A", "NG-43-V-B", "NG-43-V-C", "NG-43-V-D", "NG-43-X-A", "NG-43-X-C", "NG-43-X-D", "NG-45-V-A", "NG-45-V-C", "NG-45-Y-B", "NG-45-Y-C", "NG-45-Y-D", "NG-46-X-B", "NG-46-Z-D", "NH-42-Z-D", "NH-43-X-A", "NH-43-Y-C", "NH-43-Y-D", "NH-44-V-A", "NH-44-V-B", "NH-44-V-C", "NH-44-Y-B", "NH-45-Z-C", "NH-46-Z-A", "NH-46-Z-C", "NH-46-Z-D", "NI-43-V-A", "NI-43-Y-B", "NI-43-Y-D", "NI-43-Z-A", "NI-43-Z-C", "NI-43-Z-D", "NI-44-Y-C", "NI-44-Y-D", "NJ-43-Y-C", "NJ-43-Z-A", "NJ-43-Z-D"];
+var STUCK_CELL_YEARS = ["NI_44_Y_C_2021", "NG_43_V_B_2022", "NI_43_Z_D_2021", "NG_45_Y_C_2024", "NI_43_Z_C_2021", "NG_43_X_C_2021", "NG_45_Y_D_2024", "NG_45_Y_C_2023", "NI_44_Y_D_2015", "NI_44_Y_D_2022", "NJ_43_Z_A_2023", "NI_44_Y_D_2025", "NI_44_Y_D_2020", "NI_44_Y_C_2024", "NI_44_Y_D_2019", "NI_43_Z_C_2017", "NI_43_Y_D_2017", "NI_43_Z_D_2017", "NI_43_Z_D_2022", "NI_44_Y_D_2016", "NI_44_Y_D_2017", "NI_44_Y_C_2017", "NG_43_V_C_2019", "NI_44_Y_C_2016", "NH_44_V_B_2021", "NI_43_Y_B_2021", "NG_42_X_C_2019", "NG_43_V_D_2016", "NG_45_Y_D_2021", "NI_44_Y_C_2020", "NG_43_V_D_2019", "NI_43_Y_D_2016", "NI_43_Z_C_2016", "NI_43_Z_D_2016", "NI_43_Z_D_2019", "NJ_43_Z_D_2021", "NG_43_X_D_2017", "NI_44_Y_D_2014", "NG_42_X_B_2015", "NH_44_V_A_2021", "NI_43_Z_D_2025", "NI_43_Z_C_2020", "NG_43_X_A_2019", "NJ_43_Z_A_2020", "NG_45_V_A_2022", "NF_44_Z_C_2021", "NG_46_Z_D_2020", "NF_45_X_A_2021", "NI_43_Z_D_2008", "NF_45_V_B_2021", "NF_44_Z_D_2021", "NF_45_V_D_2021", "NF_45_V_A_2021", "NH_43_Y_D_2017", "NF_45_V_C_2021", "NF_45_X_B_2021", "NF_45_X_B_2015", "NF_45_V_A_2022", "NF_45_X_A_2018", "NH_43_Y_C_2013", "NF_45_V_B_2022", "NF_45_V_C_2023", "NG_42_Z_A_2019", "NF_45_V_A_2023", "NF_45_V_B_2020", "NF_45_V_D_2022", "NF_45_V_B_2016", "NF_45_V_C_2022", "NF_45_V_D_2020", "NF_44_Z_C_2017", "NF_45_V_B_2018", "NF_45_V_C_2015", "NF_45_X_B_2018", "NF_44_Z_C_2020", "NF_45_V_A_2015", "NF_45_V_C_2017", "NF_45_V_A_2017", "NF_45_X_A_2022", "NF_44_Z_B_2021", "NF_45_V_A_2014", "NF_45_V_A_2020", "NF_45_V_B_2015", "NF_45_V_D_2015", "NF_45_X_A_2019", "NF_44_Z_C_2015", "NF_45_V_A_2016", "NF_45_V_A_2019", "NF_45_V_A_2024", "NF_45_V_B_2019", "NF_45_X_A_2015", "NF_45_V_B_2023", "NF_45_X_B_2019", "NF_44_Z_B_2022", "NF_44_Z_D_2022", "NF_45_V_D_2023", "NF_44_Z_D_2017", "NF_45_V_A_2018", "NF_45_V_B_2017", "NF_45_V_C_2020", "NF_45_V_D_2016", "NF_45_V_D_2019", "NF_45_V_D_2017", "NF_45_X_B_2014", "NG_45_V_A_2020", "NF_44_Z_D_2015", "NF_45_V_B_2024", "NF_45_V_C_2014", "NF_45_X_B_2016", "NF_45_X_B_2022", "NF_44_Z_C_2019", "NF_45_V_C_2016", "NF_45_V_C_2024", "NF_45_V_D_2018", "NF_45_V_B_2025", "NF_45_V_C_2019", "NF_45_X_A_2016", "NF_45_X_A_2025", "NF_44_Z_B_2023", "NF_44_Z_D_2023", "NF_45_V_A_2025", "NF_45_V_B_2014", "NF_44_Z_C_2022", "NF_44_Z_D_2020", "NF_45_X_B_2008", "NF_45_V_C_2025", "NF_45_V_D_2014", "NF_45_X_A_2013", "NF_45_V_D_2024", "NF_45_V_D_2025", "NF_45_X_A_2020", "NF_45_X_A_2023", "NF_45_X_A_2024", "NF_45_V_B_2013", "NF_44_Z_C_2018", "NF_45_V_C_2018", "NF_45_X_A_2017", "NF_44_Z_B_2024", "NF_44_Z_B_2025", "NF_44_Z_C_2025", "NF_44_Z_D_2024", "NF_44_Z_D_2025", "NF_44_Z_D_2019", "NF_44_Z_C_2024", "NF_45_V_D_2013", "NF_45_V_B_2008", "NF_45_X_B_2013", "NH_46_Z_A_2008", "NF_44_Z_C_2023", "NF_45_X_A_2014", "NF_45_V_A_2008", "NF_45_V_B_2004", "NF_45_V_D_2008", "NF_44_Z_D_2014", "NF_45_X_B_2017", "NF_45_V_C_2008", "NF_45_X_B_2004", "NF_44_Z_D_2018", "NF_45_V_A_2004", "NF_45_X_B_2020", "NF_44_Z_C_2014", "NF_44_Z_C_2016", "NF_45_V_D_2004", "NF_44_Z_B_2015", "NF_44_Z_B_2017", "NF_44_Z_D_2016", "NH_46_Z_C_2018", "NF_45_V_B_2006", "NF_45_X_A_2004", "NF_45_X_A_2008", "NF_44_Z_C_2004", "NF_44_Z_C_2008", "NF_45_V_A_2006", "NF_45_V_A_2009", "NF_45_V_A_2013", "NF_44_Z_D_2006", "NF_45_V_C_2004", "NF_45_V_C_2013", "NF_44_Z_B_2020", "NF_44_Z_C_2006", "NF_44_Z_D_2004", "NF_45_V_C_2006", "NF_45_X_A_2009", "NG_45_V_C_2005", "NF_45_V_C_2009", "NF_45_X_B_2006", "NF_44_Z_D_2008", "NF_44_Z_B_2019", "NF_44_Z_D_2013", "NF_45_X_A_2006", "NI_43_V_A_2010", "NF_44_Z_B_2018", "NF_45_V_D_2006", "NF_45_X_B_2009", "NF_44_Z_B_2016", "NF_45_V_B_2009", "NF_44_Z_B_2014", "NF_44_Z_C_2009", "NF_44_Z_C_2013", "NF_45_V_A_2010", "NF_45_V_B_2005", "NF_45_X_B_2010", "NF_45_V_A_2005", "NF_45_V_D_2009", "NF_45_X_A_2005", "NH_46_Z_D_2018", "NF_44_Z_D_2009", "NF_45_V_D_2005", "NF_45_X_B_2005", "NH_45_Z_C_2005", "NF_45_V_C_2005", "NF_45_V_B_2010", "NF_44_Z_B_2004", "NF_45_X_A_2010", "NF_44_Z_B_2006", "NF_45_V_C_2010", "NF_44_Z_C_2005", "NF_44_Z_D_2005", "NF_45_V_A_2007", "NF_45_V_C_2007", "NF_45_X_B_2007", "NF_44_Z_B_2013", "NF_44_Z_D_2010", "NF_44_Z_D_2007", "NF_45_V_D_2007", "NF_45_V_D_2010", "NF_45_V_B_2007", "NF_44_Z_C_2007", "NF_45_V_B_2011", "NF_44_Z_B_2008", "NF_45_X_A_2007", "NF_45_V_A_2011", "NF_44_Z_B_2005", "NF_45_X_A_2011", "NF_45_X_B_2000", "NG_45_Y_B_1992", "NF_45_X_A_2000", "NF_44_Z_B_2009", "NF_45_V_C_2011", "NF_45_V_D_2011", "NF_45_V_B_1999", "NF_44_Z_C_2010", "NF_45_V_B_2000", "NF_45_X_B_2011", "NF_45_V_B_2003", "NF_45_X_A_2001", "NJ_43_Y_C_2012", "NF_45_V_D_2003", "NF_44_Z_C_2011", "NF_45_V_A_2003", "NF_44_Z_D_2011", "NF_45_V_C_2003", "NF_44_Z_B_2010", "NF_44_Z_C_2003", "NG_46_X_B_2000", "NF_44_Z_B_2007", "NG_45_Y_B_1989", "NF_45_V_A_1994", "NF_45_X_B_1999", "NF_45_X_B_2001", "NF_45_V_A_2000", "NF_45_X_B_2012", "NF_45_V_A_1996", "NF_45_V_B_1994", "NF_45_X_A_1999", "NF_45_V_B_2001", "NH_43_X_A_1994", "NF_44_Z_D_2003", "NF_45_V_A_1993", "NF_45_V_A_1999", "NF_45_V_D_1994", "NF_45_X_A_2003", "NF_45_V_A_2012", "NF_45_V_B_1992", "NF_45_V_C_1993", "NF_45_V_C_1994", "NF_45_V_C_1996", "NF_45_V_C_2002", "NF_45_V_C_2012", "NF_45_V_D_1992", "NG_45_Y_C_2000", "NF_45_X_A_1998", "NF_45_X_B_2002", "NH_44_Y_B_2012", "NF_44_Z_D_2002", "NF_45_V_A_2001", "NF_45_V_D_2012", "NF_45_X_B_2003", "NF_45_V_B_2012", "NF_45_V_A_1992", "NF_45_V_A_2002", "NF_45_V_D_2000", "NF_45_V_D_2001", "NF_45_X_A_1997", "NF_45_X_B_1996", "NF_45_V_B_1997", "NF_45_X_A_1994", "NF_44_Z_B_2011", "NF_45_V_A_1997", "NF_45_V_B_1996", "NF_45_V_B_1998", "NF_45_V_B_2002", "NF_45_V_D_2002", "NF_45_X_B_1998", "NH_42_Z_D_1993", "NF_44_Z_B_2003", "NF_45_X_A_2002", "NF_45_X_B_1994", "NF_45_X_B_1997", "NF_44_Z_B_2002", "NF_45_V_C_1992", "NF_45_X_A_1992", "NF_44_Z_C_1992", "NF_45_V_C_2000", "NF_45_V_C_2001", "NF_45_X_D_1992", "NF_44_Z_D_1993", "NF_45_V_D_1996", "NF_45_V_D_1999", "NF_45_X_A_2012", "NF_44_Z_D_1996", "NF_44_Z_D_2012", "NF_45_X_A_1991", "NF_45_X_B_1992", "NF_44_Z_D_1992", "NF_45_V_D_1993", "NF_45_V_D_1989", "NF_45_X_A_1989", "NF_45_X_A_1996", "NI_43_Z_A_2002", "NF_44_Z_D_2001", "NF_45_V_B_1989", "NF_45_V_C_1997", "NF_44_Z_D_1994", "NF_45_V_B_1993", "NF_45_X_B_1991", "NF_44_Z_B_1993", "NF_45_X_A_1990", "NF_44_Z_C_2002", "NF_45_V_D_1997", "NF_45_X_B_1988", "NF_45_X_B_1990", "NF_45_X_B_1993", "NF_44_Z_C_2001", "NF_44_Z_C_2012", "NF_44_Z_D_1991", "NF_45_V_A_1989", "NF_44_Z_C_1991", "NF_44_Z_C_1996", "NF_44_Z_C_1989", "NF_45_V_A_1988", "NF_45_V_C_1989", "NF_45_X_B_1989", "NF_44_Z_C_1994", "NF_45_X_A_1993", "NI_43_V_A_1995", "NF_44_Z_B_2001", "NF_44_Z_D_1988", "NF_45_V_A_1995", "NF_45_V_D_1995", "NF_45_X_A_1988", "NF_45_X_A_1995", "NF_44_Z_D_1997", "NF_45_V_B_1995", "NF_45_V_D_1990", "NF_44_Z_B_1992", "NF_44_Z_B_1994", "NF_44_Z_B_1996", "NF_44_Z_B_2012", "NF_44_Z_D_1989", "NF_45_V_B_1988", "NF_45_V_B_1990", "NF_45_V_C_1995", "NF_45_V_D_1991", "NF_45_X_B_1995", "NF_44_Z_C_1993", "NF_45_V_A_1998", "NF_45_V_C_1988", "NF_44_Z_D_1995", "NF_45_X_D_1988", "NF_45_V_B_1991", "NF_44_Z_D_2000", "NF_45_V_C_1999", "NF_44_Z_C_1988", "NF_45_V_A_1990", "NF_45_V_C_1990", "NF_44_Z_B_1991", "NF_44_Z_C_1995", "NF_44_Z_B_1988", "NF_44_Z_B_1989", "NF_45_V_A_1991", "NF_44_Z_B_1997", "NF_44_Z_B_2000", "NF_44_Z_C_2000", "NF_45_V_C_1991", "NF_45_V_D_1988", "NH_44_V_C_2001", "NF_45_V_D_1998", "NF_44_Z_D_1990", "NF_44_Z_B_1995", "NF_44_Z_C_1990", "NH_44_V_B_1991", "NF_44_Z_C_1999", "NF_44_Z_B_1990", "NF_44_Z_C_1997", "NF_44_Z_D_1999", "NF_45_V_A_1987", "NF_45_V_C_1987", "NF_44_Z_D_1987", "NF_45_X_A_1987", "NF_44_Z_B_1999", "NF_45_V_B_1987", "NF_45_X_B_1987", "NF_45_V_C_1998", "NF_45_V_D_1987", "NF_44_Z_C_1987", "NF_44_Z_C_1998"];
+
+// Grade completa como contexto
+var grid = ee.FeatureCollection(GRID);
+Map.addLayer(grid.style({color: "666666", width: 1, fillColor: "00000000"}),
+             {}, "Grade (283 celulas)", false);
+
+// Celulas travadas destacadas
+var stuck = grid.filter(ee.Filter.inList("name", STUCK_CELLS));
+Map.addLayer(stuck.style({color: "FF0000", width: 2, fillColor: "FF000033"}),
+             {}, "Celulas travadas (" + STUCK_CELLS.length + ")", true);
+
+// Painel para inspecionar um mosaico travado (RGB = red/green/blue median)
+var label = ui.Label("Mosaicos travados");
+var select = ui.Select({
+  items: STUCK_CELL_YEARS.sort(),
+  placeholder: "Escolha celula-ano",
+  style: {stretch: "horizontal"}
+});
+
+var vis = {bands: ["red_median", "green_median", "blue_median"],
+            min: 0, max: 4000, gamma: 1.3};
+var LAYER_NAME = "__mosaico__";
+
+function show(name) {
+  Map.layers().forEach(function(l) {
+    if (l.getName() === LAYER_NAME) { Map.remove(l); }
+  });
+  var cell = name.split("_").slice(0, 4).join("-");
+  Map.addLayer(ee.Image(COLLECTION + "/" + name), vis, LAYER_NAME);
+  var g = ee.FeatureCollection(GRID).filter(ee.Filter.eq("name", cell)).geometry();
+  Map.centerObject(g, 8);
+}
+
+select.onChange(show);
+
+var panel = ui.Panel([label, select], ui.Panel.Layout.flow("vertical"));
+Map.add(panel);
+Map.setCenter(84, 22, 5);
+
+print("Celulas travadas:", STUCK_CELLS.length);
+print("Celulas-anos travadas:", STUCK_CELL_YEARS.length);
