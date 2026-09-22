@@ -185,9 +185,13 @@ Coleção `mosaics-2`, 10.847/11.320 construídos (**95,8%**).
 | Desfecho | Qtd | Detalhe |
 |---|---|---|
 | Construídos | 10.847 | 95,8% |
-| Gaps de arquivo | 471 | pré-2000 sem cenas (zero-scene); 1986 é o pior (30/283) |
+| Gaps de arquivo | 463 | pré-2000 sem cenas (zero-scene); 1986 é o pior (30/283) |
 | Travados reais | 2 | `NH-44-V-A_2021`, `NI-43-Z-D_2019` — estagnam no export (EECU congela) |
 | Bug de física | 8 | overpass table vazia → `NoneType has no len()` (ver abaixo) |
+
+> Os 473 não construídos = **463 + 8 + 2**. Este arquivo já disse "471 gaps", que não
+> fecha contra 11.320; a conta correta é a da tabela e a de
+> `india/docs/entrega_dados_relatorio.md`.
 
 ### Incidente "travamento de export" (causa raiz medida)
 - Exports ficavam `RUNNING` 6–47h (mediana ~41 min). Pior caso: 28/50 slots parados.
@@ -212,25 +216,49 @@ tratar lista vazia como "sem correção" — destravaria as 8 de graça. Ainda N
 2. **8 células do bug de física** — fix do `topo_physics` (overpass vazio).
 3. **`WARNING ... ship UNCORRECTED`** — alguns passes L5/L7 sem linha na tabela 6S
    (topo não aplicado) em certas células/anos; checar impacto de qualidade.
-4. **Relatório descritivo completo** (ver seção abaixo).
-5. **Espaço** — liberamos ~25 TB (Indonesia/DRC/MA-legado); `.../INDIA/mosaics-1` (v1,
+4. **Espaço** — liberamos ~25 TB (Indonesia/DRC/MA-legado); `.../INDIA/mosaics-1` (v1,
    ~47 TB) segue existindo e é candidata a retirada futura se o v2 a substituir.
 
-## Relatório descritivo (tarefa aberta)
+## Relatório de entrega (feito — 2026-09-22)
 
-Pedido: relatório completo da rodada (metodologia, resultados, **imagens dos mosaicos**,
-**estatísticas por ano**), página HTML/artefato, para apresentar à equipe.
+Entregue. **O contrato de conteúdo é `india/docs/REPORT.md`** — ler antes de mexer na
+página ou de escrever o próximo relatório; lá estão as seções na ordem, a fonte de cada
+número, as regras do design system e como reconstruir. Aqui só o mapa dos arquivos:
 
-- **Design system obrigatório:** `https://claude.ai/artifact/79QHMmzNVuF9NtFFx1Q6DH`
-  (bloqueado nesta sessão — ver gotcha de autenticação acima).
-- Esboço atual (pobre): `india/docs/run_closeout_report.html`.
-- **Dados já prontos** no repo:
-  - `india/docs/run_yearly_stats.txt` — built/gap por ano (1986–2025).
-  - `india/docs/run_thumbnails.json` — 6 thumbnails RGB base64 (`NB-46-X-A_2018`,
-    `NG-42-X-B_2015`, `NH-44-V-C_2019`, `NF-45-X-D_2018`, `NG-43-X-D_2017`,
-    `NC-46-Y-B_2018` — biomas distintos).
-  - `india/docs/stuck_mosaics_report.md` — incidente (causa raiz + lista das 71 travadas).
-  - `india/docs/visualize_stuck_mosaics.js` — script Code Editor p/ visualizar travadas.
+| Arquivo | O que é |
+|---|---|
+| `https://claude.ai/artifact/UC6xhNbzn6NaY5RFFaojPC` | publicado (privado; compartilhar pelo menu Share) |
+| `india/docs/REPORT.md` | **o contrato** — seções, números, imagens, build |
+| `india/docs/delivery_report.html` | fonte da página; precisa de `ds/` e `img/` irmãos |
+| `india/docs/delivery_report.standalone.html` | tudo embutido (~4,5 MB), abre com duplo clique — é a cópia versionada |
+| `india/docs/make_report_thumbs.py` | gera as imagens (Earth Engine); `--coverage ANO` mede pixels válidos por célula |
+| `india/docs/build_report.py` | fonte + assets → arquivo único |
+| `india/docs/run_daily_throughput.py` → `.csv` | vazão dia a dia da rodada, lida dos assets entregues |
+
+### Vazão da rodada (medida — serve para planejar a próxima)
+
+A rodada nacional levou **18 dias** (4–21 set 2026): **10.847 mosaicos**, **26,09 TB**,
+586.791 cenas Landsat. Pico 1.225/dia (8 set), **mediana 620/dia** — planejar pela
+mediana, não pelo pico. 10.799 dos 10.847 caíram nos primeiros 14 dias; o resto é cauda
+de stragglers. Médias úteis: **2,40 GB por mosaico**, ~54 cenas por imagem.
+
+- Reprocessar a nação inteira: **~18 dias, ~27 TB**.
+- Um ano novo (283 células): **~meio dia, ~0,7 TB**.
+- A fila tem teto por conta, então a rodada é feita **em sentadas** — as submissões
+  aparecem em blocos (2.394 no dia 8, 2.711 no dia 14) e os dias seguintes são o backlog
+  drenando.
+- **Não usar `listOperations`** para reconstruir isso: tem teto e descarta ops antigas.
+  Os assets carregam `updateTime` (concluído) e `properties.built_utc` (enfileirado).
+
+Decisões que não devem ser refeitas do zero (o porquê está no `REPORT.md`): relatório em
+**inglês**; design system MapBiomas com o **bundle real**, não reimplementado; parágrafos
+justificados na coluna inteira; grid nacional **4 × 10** com stretch fixo; células de
+amostra escolhidas por **cobertura medida** (>99%), nunca a olho — célula de litoral sai
+recortada pela máscara de região e parece defeito.
+
+- Esboço antigo, superado: `india/docs/run_closeout_report.html` (candidato a remoção).
+- `india/docs/run_thumbnails.json` também está superado — as miniaturas agora saem de
+  `make_report_thumbs.py`, em JPEG e com cobertura verificada.
 
 ## Metodologia (resumo — autoridade é o ATBD e `india/pipeline/config.py`)
 
