@@ -1,0 +1,1299 @@
+<!-- Source of the published delivery report.
+     Published: https://claude.ai/artifact/UC6xhNbzn6NaY5RFFaojPC
+     Contract:  docs/REPORT.md  <- read this before changing the page
+
+     This file does NOT open on its own: it references ds/* and img/* as siblings.
+     For a copy that does, see delivery_report.standalone.html (built by build_report.py).
+     Serve it with charset=utf-8 or the design-system bundle fails to parse. -->
+<title>India Landsat Mosaics v2</title>
+<link rel="stylesheet" href="ds/bundle.css">
+<style>
+  /* ------------------------------------------------------------------
+     Page styles. Every value below is a MapBiomas design-system token
+     from ds/bundle.css — no literal colours, sizes or radii.
+     The system documents one theme (light); the page commits to it.
+     ------------------------------------------------------------------ */
+  :root { color-scheme: light; }
+
+  body {
+    margin: 0;
+    background: var(--color-neutral-200);
+    color: var(--color-neutral-900);
+    font-family: var(--font-family-base);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- type utilities: the four sizes, nothing else ---------------- */
+  .t-lg-strong { font: var(--body-large-strong); margin: 0; }
+  .t-lg        { font: var(--body-large); margin: 0; }
+  .t-md-strong { font: var(--body-medium-strong); margin: 0; }
+  .t-md-semi   { font: var(--body-medium-semibold); margin: 0; }
+  .t-md        { font: var(--body-medium); margin: 0; }
+  .t-sm-strong { font: var(--body-small-strong); margin: 0; }
+  .t-sm-semi   { font: var(--body-small-semibold); margin: 0; }
+  .t-sm        { font: var(--body-small); margin: 0; }
+  .t-note-strong { font: var(--body-note-strong); margin: 0; }
+  .t-note      { font: var(--body-note); margin: 0; }
+
+  .ink-max { color: var(--color-neutral-1000); }
+  .ink-title { color: var(--color-neutral-900); }
+  .ink-field { color: var(--color-neutral-800); }
+  .ink-metric { color: var(--color-neutral-700); }
+  .ink-second { color: var(--color-neutral-600); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* section label: 12/700 uppercase, .72px tracking, neutral-600 */
+  .eyebrow {
+    font: var(--body-note-strong);
+    text-transform: uppercase;
+    letter-spacing: .72px;
+    color: var(--color-neutral-600);
+    margin: 0;
+  }
+
+  a { color: var(--color-primary-700); text-decoration: none; }
+  a:hover { color: var(--color-primary-900); text-decoration: underline; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--color-action-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-medium);
+  }
+
+  /* --- shell ------------------------------------------------------- */
+  .topbar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: var(--z-index-principal-content);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-size-large);
+    height: 45px;
+    padding: 0 var(--spacing-size-xlarge);
+    background: var(--color-neutral-200);
+    border-bottom: 1px solid var(--color-neutral-300);
+  }
+  .topbar .mark { display: flex; flex: none; }
+  .topbar .mark svg { display: block; height: 22px; width: auto; }
+  .topbar nav { margin-left: auto; display: flex; gap: var(--spacing-size-xlarge); }
+  .topbar nav a { font: var(--body-note-strong); color: var(--color-neutral-700); }
+  .topbar nav a:hover { color: var(--color-primary-700); text-decoration: none; }
+  @media (max-width: 839px) { .topbar nav { display: none; } }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-inline: var(--spacing-size-2xlarge);
+    padding-block: var(--spacing-size-4xlarge) var(--spacing-size-6xlarge);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-5xlarge);
+  }
+  @media (max-width: 599px) {
+    .wrap { padding-inline: var(--spacing-size-xlarge); padding-block: var(--spacing-size-2xlarge) var(--spacing-size-4xlarge); }
+  }
+
+  section { display: flex; flex-direction: column; gap: var(--spacing-size-2xlarge); scroll-margin-top: 64px; }
+  .head { display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+
+  /* Running text is justified and hyphenated, and runs the full content column. */
+  .justify {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+  /* A short last line left alone reads better than one stretched across the column. */
+  .justify { text-align-last: left; }
+
+  .prose { display: flex; flex-direction: column; gap: var(--spacing-size-large); }
+  .prose p { margin: 0; font: var(--body-medium); color: var(--color-neutral-800); }
+  .prose p + p { margin-top: var(--spacing-size-large); }
+  .prose strong { font-weight: var(--font-weight-bold); color: var(--color-neutral-1000); }
+  .lede { font: var(--body-medium); color: var(--color-neutral-700); margin: 0; }
+
+  /* --- cover ------------------------------------------------------- */
+  .cover { display: flex; flex-direction: column; gap: var(--spacing-size-2xlarge); }
+  .lockup { display: flex; align-items: center; gap: var(--spacing-size-large); }
+  .lockup svg { display: block; height: 44px; width: auto; }
+  .lockup .name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.5;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--color-neutral-900);
+  }
+  .cover h1 {
+    font: var(--body-large-strong);
+    color: var(--color-neutral-1000);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* --- grids ------------------------------------------------------- */
+  .figures { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-size-xlarge); }
+  @media (max-width: 1019px) { .figures { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 599px) { .figures { grid-template-columns: 1fr; } }
+
+  .figure { display: flex; flex-direction: column; gap: var(--spacing-size-small); }
+  .figure .value { font: var(--body-large-strong); color: var(--color-neutral-1000); font-variant-numeric: tabular-nums; }
+  .figure .label { font: var(--body-note-strong); text-transform: uppercase; letter-spacing: .72px; color: var(--color-neutral-600); }
+  .figure .note { font: var(--body-note); color: var(--color-neutral-600); }
+
+  .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-size-xlarge); }
+  @media (max-width: 839px) { .two-col { grid-template-columns: 1fr; } }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-size-xlarge); }
+  @media (max-width: 1019px) { .three-col { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 599px) { .three-col { grid-template-columns: 1fr; } }
+
+  .card-body { display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+  .card-body dl { margin: 0; display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+  .card-body dt { font: var(--body-note-strong); text-transform: uppercase; letter-spacing: .72px; color: var(--color-neutral-600); }
+  .card-body dd { margin: 0; font: var(--body-small); color: var(--color-neutral-800); }
+  .card-body dd + dt { margin-top: var(--spacing-size-medium); }
+  .card-body p { margin: 0; font: var(--body-small); color: var(--color-neutral-800); }
+  .card-body p + p { margin-top: var(--spacing-size-large); }
+
+  /* --- the processing order (a real sequence, so it is numbered) --- */
+  .steps { display: flex; flex-direction: column; gap: 0; counter-reset: step; }
+  .step {
+    display: grid;
+    grid-template-columns: 28px 132px 1fr;
+    gap: var(--spacing-size-large);
+    align-items: baseline;
+    padding: var(--spacing-size-large) var(--spacing-size-small);
+    border-bottom: 1px solid var(--color-neutral-300);
+  }
+  .step:first-child { border-top: 1px solid var(--color-neutral-300); }
+  .step .n { font: var(--body-note-strong); color: var(--color-primary-700); font-variant-numeric: tabular-nums; }
+  .step .k { font: var(--body-small-strong); color: var(--color-neutral-1000); }
+  .step .w { font: var(--body-small); color: var(--color-neutral-700); }
+  @media (max-width: 599px) {
+    .step { grid-template-columns: 24px 1fr; }
+    .step .w { grid-column: 2; }
+  }
+
+  /* --- tables ------------------------------------------------------ */
+  .table-scroll { overflow-x: auto; }
+  /* a table that fills a Panel body edge to edge keeps the panel's corners */
+  .table-flush { border-radius: var(--border-radius-xlarge); overflow: hidden; }
+  table { border-collapse: collapse; width: 100%; min-width: 440px; }
+  caption { text-align: left; font: var(--body-note); color: var(--color-neutral-600); padding-bottom: var(--spacing-size-medium); }
+  th, td {
+    text-align: left;
+    padding: var(--spacing-size-medium) var(--spacing-size-large);
+    border-bottom: 1px solid var(--color-neutral-300);
+    font: var(--body-small);
+    color: var(--color-neutral-800);
+  }
+  thead th {
+    font: var(--body-note-strong);
+    text-transform: uppercase;
+    letter-spacing: .72px;
+    color: var(--color-neutral-600);
+    background: var(--color-neutral-200);
+    border-bottom: 1px solid var(--color-neutral-300);
+    white-space: nowrap;
+  }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  td.k { font: var(--body-small-strong); color: var(--color-neutral-1000); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* --- chart ------------------------------------------------------- */
+  .chart-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-size-xlarge); margin-bottom: var(--spacing-size-large); }
+  .legend { display: flex; gap: var(--spacing-size-xlarge); }
+  .legend span { display: inline-flex; align-items: center; gap: var(--spacing-size-medium); font: var(--body-note); color: var(--color-neutral-700); }
+  .legend i { width: 10px; height: 10px; border-radius: var(--border-radius-small); flex: none; }
+  /* The tooltip lives in the frame, not in the scroller: an overflow container
+     would clip it, and an absolute child of it would scroll away from the bar. */
+  .chart-frame { position: relative; }
+  .chart-scroll { overflow-x: auto; }
+  .chart-scroll svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  /* chart marks and text, coloured through the tokens rather than literals */
+  .chart-scroll svg text { font-family: var(--font-family-base); font-size: 12px; }
+  .g-line  { stroke: var(--color-neutral-300); stroke-width: 1; }
+  .g-lab   { fill: var(--color-neutral-600); }
+  .g-annot { fill: var(--color-neutral-800); font-weight: var(--font-weight-bold); }
+  .b-built { fill: var(--color-primary-700); }
+  .b-miss  { fill: var(--color-neutral-300); }
+  .a-fill  { fill: var(--color-primary-200); }
+  .a-line  { fill: none; stroke: var(--color-primary-700); stroke-width: 2; stroke-linejoin: round; }
+  /* the two days the queue seized up, marked behind the columns */
+  .a-stall { fill: var(--color-warning-200); opacity: .55; }
+  .tip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--color-tooltip-bg);
+    color: var(--color-tooltip-fg);
+    font: var(--body-note);
+    padding: var(--spacing-size-medium) var(--spacing-size-large);
+    border-radius: var(--border-radius-medium);
+    white-space: nowrap;
+    max-width: 100%;
+    transform: translate(-50%, -100%);
+    opacity: 0;
+    transition: opacity var(--transition-default);
+    z-index: var(--z-index-tooltip);
+  }
+  .tip b { font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+
+  /* --- meter ------------------------------------------------------- */
+  .meter { display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+  .meter .track { display: flex; gap: var(--spacing-size-smaller); height: 12px; }
+  .meter .track i { border-radius: var(--border-radius-small); }
+  .meter .track i:first-child { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+  .meter .track i:last-child { border-top-right-radius: 6px; border-bottom-right-radius: 6px; }
+
+  /* --- national small multiples: 4 across, 10 down ------------------ */
+  .years { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-size-xlarge); }
+  @media (max-width: 1019px) { .years { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 599px) { .years { grid-template-columns: repeat(2, 1fr); } }
+  .year-tile { margin: 0; display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+  .year-tile img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;           /* the width/height attributes must not become a definite height */
+    aspect-ratio: 450 / 480;
+    object-fit: cover;
+    border-radius: var(--border-radius-large);
+    border: 1px solid var(--color-neutral-300);
+    /* the tiles carry their own nodata as black, so the placeholder matches */
+    background: var(--color-neutral-1100);
+  }
+  .year-tile figcaption {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-size-medium);
+  }
+  .year-tile .y { font: var(--body-small-strong); color: var(--color-neutral-1000); font-variant-numeric: tabular-nums; }
+  .year-tile .c { font: var(--body-note); color: var(--color-neutral-600); font-variant-numeric: tabular-nums; }
+  /* the thin years, called out by the tile that carries them */
+  .year-tile[data-thin="1"] .c { color: var(--color-neutral-800); font-weight: var(--font-weight-bold); }
+
+  /* --- gallery ----------------------------------------------------- */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-size-xlarge); }
+  @media (max-width: 1019px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 599px) { .gallery { grid-template-columns: 1fr; } }
+  figure { margin: 0; display: flex; flex-direction: column; gap: var(--spacing-size-medium); }
+  figure img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 560 / 375;
+    object-fit: cover;
+    border-radius: var(--border-radius-large);
+    border: 1px solid var(--color-neutral-300);
+    background: var(--color-neutral-200);
+  }
+  figcaption { display: flex; flex-direction: column; gap: var(--spacing-size-smaller); }
+  figcaption .id { font: var(--body-small-strong); color: var(--color-neutral-1000); font-variant-numeric: tabular-nums; }
+  figcaption .where { font: var(--body-note); color: var(--color-neutral-600); }
+
+  /* --- asset paths and other verbatim strings ---------------------- */
+  .path {
+    display: inline-block;
+    background: var(--color-neutral-200);
+    border: 1px solid var(--color-neutral-300);
+    border-radius: var(--border-radius-medium);
+    padding: 0 var(--spacing-size-small);
+    font: var(--body-small);
+    color: var(--color-neutral-900);
+    word-break: break-all;
+  }
+  .path-block { display: block; padding: var(--spacing-size-medium) var(--spacing-size-large); }
+
+  /* --- comparison bars (the incident) ------------------------------ */
+  .compare { display: flex; flex-direction: column; gap: var(--spacing-size-large); }
+  .compare .row { display: grid; grid-template-columns: 148px 1fr auto; gap: var(--spacing-size-large); align-items: center; }
+  .compare .row .lab { font: var(--body-note); color: var(--color-neutral-700); }
+  .compare .row .bar { height: 12px; border-radius: var(--border-radius-small); }
+  .compare .row .val { font: var(--body-note-strong); color: var(--color-neutral-1000); font-variant-numeric: tabular-nums; }
+  @media (max-width: 599px) {
+    .compare .row { grid-template-columns: 1fr auto; }
+    .compare .row .lab { grid-column: 1 / -1; }
+  }
+
+  /* --- open items -------------------------------------------------- */
+  .items { display: flex; flex-direction: column; gap: 0; }
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--spacing-size-large);
+    align-items: start;
+    padding: var(--spacing-size-xlarge) var(--spacing-size-small);
+    border-bottom: 1px solid var(--color-neutral-300);
+  }
+  .item:first-child { border-top: 1px solid var(--color-neutral-300); }
+  .item .what { display: flex; flex-direction: column; gap: var(--spacing-size-small); }
+  .item .what .k { font: var(--body-small-strong); color: var(--color-neutral-1000); }
+  .item .what .w { font: var(--body-small); color: var(--color-neutral-700); }
+
+  details { border-top: 1px solid var(--color-neutral-300); padding-top: var(--spacing-size-large); }
+  summary { font: var(--body-small-semibold); color: var(--color-primary-700); cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸ "; }
+  details[open] summary::before { content: "▾ "; }
+  details .table-scroll { margin-top: var(--spacing-size-large); }
+
+  .footer { display: flex; flex-direction: column; gap: var(--spacing-size-medium); padding-top: var(--spacing-size-2xlarge); border-top: 1px solid var(--color-neutral-300); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="topbar">
+  <span class="mark" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 124"><polygon points="41.2,42.7 24.2,25.9 41.2,9" fill="#75C7E0"/><polygon points="41.1,42.7 58,25.9 41.1,9" fill="#62A5BB"/><polygon points="113.1,42.7 96.2,25.9 113.1,9" fill="#84CAA0"/><polygon points="113.1,42.7 130,25.9 113.1,9" fill="#77B893"/><polygon points="6.2,43.8 23.1,27 40,43.8" fill="#75C7E0"/><polygon points="6.2,43.8 23.1,60.7 40,43.8" fill="#62A5BB"/><polygon points="59.1,60.7 42.2,43.8 59.1,27" fill="#84CAA0"/><polygon points="59,60.7 76,43.8 59,27" fill="#77B893"/><polygon points="78.2,43.8 95.1,27 112,43.8" fill="#DCDB77"/><polygon points="78.2,43.8 95.1,60.7 112,43.8" fill="#C5C56C"/><polygon points="131.1,60.7 114.2,43.8 131.1,27" fill="#DCDB77"/><polygon points="131.1,60.7 148,43.8 131.1,27" fill="#C5C56C"/><polygon points="24.2,61.7 41.1,44.8 58.1,61.7" fill="#75C7E0"/><polygon points="24.2,61.7 41.1,78.5 58.1,61.7" fill="#62A5BB"/><polygon points="60.2,61.8 77.1,44.9 94,61.8" fill="#F7963F"/><polygon points="60.2,61.8 77.1,78.6 94,61.8" fill="#E18837"/><polygon points="113.1,78.6 96.2,61.8 113.1,44.9" fill="#84CAA0"/><polygon points="113.1,78.6 130,61.8 113.1,44.9" fill="#77B893"/><polygon points="42.2,79.7 59.2,62.8 76.1,79.7" fill="#75C7E0"/><polygon points="42.2,79.6 59.2,96.5 76.1,79.6" fill="#62A5BB"/><polygon points="95.1,96.6 78.2,79.7 95.1,62.9" fill="#DCDB77"/><polygon points="95.1,96.6 112,79.7 95.1,62.9" fill="#C5C56C"/><polygon points="60.3,97.6 77.2,80.7 94.1,97.6" fill="#84CAA0"/><polygon points="60.3,97.6 77.2,114.5 94.1,97.6" fill="#77B893"/></svg>
+  </span>
+  <span class="t-note-strong ink-field">India mosaics v2 · delivery report</span>
+  <nav>
+    <a href="#product">Product</a>
+    <a href="#method">Method</a>
+    <a href="#coverage">Coverage</a>
+    <a href="#national">National</a>
+    <a href="#outcome">Outcome</a>
+    <a href="#mosaics">Mosaics</a>
+    <a href="#throughput">Throughput</a>
+    <a href="#incident">Incident</a>
+    <a href="#access">Access</a>
+  </nav>
+</div>
+
+<div id="app" class="wrap" lang="en">
+  <p class="t-md ink-field">Delivery report for the MapBiomas India annual Landsat mosaics, v2 — 10,847 of 11,320 cell-years built (95.8%). Loading the report…</p>
+</div>
+
+<script src="ds/react.js"></script>
+<script src="ds/react-dom.js"></script>
+<script src="ds/lucide.js"></script>
+<script src="ds/bundle.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var DS = window.MapBiomasDesignSystem_0911f7;
+  var h = React.createElement;
+  var F = React.Fragment;
+
+  // A raw-HTML leaf: prose is authored as HTML, structure as components.
+  function raw(html, cls) {
+    return h('div', { className: cls || undefined, dangerouslySetInnerHTML: { __html: html } });
+  }
+
+  /* ================= data =========================================
+     Sources in the repository:
+       india/docs/run_yearly_stats.txt   — built / not built per year
+       india/docs/entrega_dados_relatorio.md — outcome reconciliation
+       india/docs/stuck_mosaics_report.md — the export-stall incident
+     ================================================================ */
+
+  var CELLS = 283, YEARS = 40, PLAN = CELLS * YEARS; // 11,320
+
+  var BUILT_BY_YEAR = [
+    [1986, 30], [1987, 229], [1988, 220], [1989, 279], [1990, 275],
+    [1991, 281], [1992, 281], [1993, 278], [1994, 269], [1995, 270],
+    [1996, 274], [1997, 280], [1998, 246], [1999, 283], [2000, 282],
+    [2001, 283], [2002, 283], [2003, 283], [2004, 283], [2005, 283],
+    [2006, 283], [2007, 283], [2008, 283], [2009, 283], [2010, 280],
+    [2011, 283], [2012, 283], [2013, 283], [2014, 283], [2015, 283],
+    [2016, 283], [2017, 283], [2018, 283], [2019, 282], [2020, 283],
+    [2021, 282], [2022, 283], [2023, 283], [2024, 283], [2025, 283]
+  ];
+
+  var BUILT = BUILT_BY_YEAR.reduce(function (a, r) { return a + r[1]; }, 0); // 10,847
+  var MISSING = PLAN - BUILT;                                                // 473
+  var PCT = (BUILT / PLAN * 100).toFixed(1);                                 // 95.8
+
+  var OUTCOMES = [
+    { k: 'Delivered', n: BUILT, tone: 'active',
+      w: 'Written to the production collection and readable as an Earth Engine asset.' },
+    { k: 'Archive gap', n: 463, tone: 'inactive',
+      w: 'No usable Landsat granule exists for that cell-year. Skipped as an honest gap, not a failure.' },
+    { k: 'Blocked — empty overpass table', n: 8, tone: 'pending',
+      w: '1–6 granules present, but the 6S overpass table comes back empty and the topographic step raises NoneType has no len().' },
+    { k: 'Stalled export', n: 2, tone: 'failed',
+      w: 'EECU accounting freezes mid-export at 44% and 73%. Scene-specific; under investigation.' }
+  ];
+
+  var STEPS = [
+    ['mask', 'Clean pixels are a precondition for both the correction and the BRDF.'],
+    ['topographic', 'SCS+C with a physical C from 6S tables — before the BRDF, following the C2-physics order.'],
+    ['BRDF', 'Applied after bandpass, over already-corrected reflectance.'],
+    ['SMA', 'Runs in the ×10,000 space, where the endmembers were calibrated.'],
+    ['indices', 'Run in 0–1 space: divide, compute, multiply back.'],
+    ['composite', 'Median plus dry/wet percentiles across the phenological year.'],
+    ['static bands', 'Terrain, coordinates and provenance counts.'],
+    ['region mask', 'Last: clip to the union of the classification regions.']
+  ];
+
+  // Six interior cells, each above 99% valid pixels, so every frame is full.
+  var MOSAICS = [
+    ['NG-42-X-B_2015', 'Thar desert, north-west'],
+    ['NG-43-X-D_2017', 'Central plateau — the 250-granule cell from the incident'],
+    ['NH-44-V-C_2019', 'Himalayan front — high relief'],
+    ['NF-45-Y-B_2018', 'Eastern plateau'],
+    ['NC-43-Z-B_2018', 'Southern peninsula'],
+    ['NG-46-X-B_2018', 'Far north-east']
+  ];
+
+  /* Every image the page uses, as a literal path. Nothing here is built by
+     concatenation on purpose: docs/build_report.py rewrites each of these
+     strings into a data URI to produce the self-contained copy the repository
+     versions, and it can only see paths that are written out in full. */
+  var IMG = {
+    'NG-42-X-B_2015': 'img/NG-42-X-B_2015.jpg',
+    'NG-43-X-D_2017': 'img/NG-43-X-D_2017.jpg',
+    'NH-44-V-C_2019': 'img/NH-44-V-C_2019.jpg',
+    'NF-45-Y-B_2018': 'img/NF-45-Y-B_2018.jpg',
+    'NC-43-Z-B_2018': 'img/NC-43-Z-B_2018.jpg',
+    'NG-46-X-B_2018': 'img/NG-46-X-B_2018.jpg',
+    'india_1986': 'img/india_1986.jpg', 'india_1987': 'img/india_1987.jpg',
+    'india_1988': 'img/india_1988.jpg', 'india_1989': 'img/india_1989.jpg',
+    'india_1990': 'img/india_1990.jpg', 'india_1991': 'img/india_1991.jpg',
+    'india_1992': 'img/india_1992.jpg', 'india_1993': 'img/india_1993.jpg',
+    'india_1994': 'img/india_1994.jpg', 'india_1995': 'img/india_1995.jpg',
+    'india_1996': 'img/india_1996.jpg', 'india_1997': 'img/india_1997.jpg',
+    'india_1998': 'img/india_1998.jpg', 'india_1999': 'img/india_1999.jpg',
+    'india_2000': 'img/india_2000.jpg', 'india_2001': 'img/india_2001.jpg',
+    'india_2002': 'img/india_2002.jpg', 'india_2003': 'img/india_2003.jpg',
+    'india_2004': 'img/india_2004.jpg', 'india_2005': 'img/india_2005.jpg',
+    'india_2006': 'img/india_2006.jpg', 'india_2007': 'img/india_2007.jpg',
+    'india_2008': 'img/india_2008.jpg', 'india_2009': 'img/india_2009.jpg',
+    'india_2010': 'img/india_2010.jpg', 'india_2011': 'img/india_2011.jpg',
+    'india_2012': 'img/india_2012.jpg', 'india_2013': 'img/india_2013.jpg',
+    'india_2014': 'img/india_2014.jpg', 'india_2015': 'img/india_2015.jpg',
+    'india_2016': 'img/india_2016.jpg', 'india_2017': 'img/india_2017.jpg',
+    'india_2018': 'img/india_2018.jpg', 'india_2019': 'img/india_2019.jpg',
+    'india_2020': 'img/india_2020.jpg', 'india_2021': 'img/india_2021.jpg',
+    'india_2022': 'img/india_2022.jpg', 'india_2023': 'img/india_2023.jpg',
+    'india_2024': 'img/india_2024.jpg', 'india_2025': 'img/india_2025.jpg'
+  };
+
+  /* The run, day by day. Read from the delivered assets themselves, not from
+     listOperations, which has a ceiling and drops old operations:
+       completed  = the asset's updateTime, when Earth Engine finished writing it
+       submitted  = properties.built_utc, when the pipeline composed the export
+     Regenerated by docs/run_daily_throughput.py -> docs/run_daily_throughput.csv. */
+  var DAILY = [
+    ['09-04',  542, 1087,  782.39], ['09-05', 1131,  659, 2175.24],
+    ['09-06',   70,    0,  116.43], ['09-07',  139,  550,   79.79],
+    ['09-08', 1225, 2394, 3560.48], ['09-09',  983,    0, 2505.80],
+    ['09-10',  598,    0, 1962.76], ['09-11',  502, 2192, 1526.95],
+    ['09-12',  964,  785, 1695.32], ['09-13',  962,   57, 3150.81],
+    ['09-14',  750, 2711, 1962.27], ['09-15', 1131,  311, 2830.46],
+    ['09-16', 1161,   53, 2346.79], ['09-17',  641,    0, 1297.83],
+    ['09-18',    3,    4,    5.91], ['09-19',   13,   44,   28.10],
+    ['09-20',   31,    0,   55.60], ['09-21',    1,    0,    3.56]
+  ];
+  var RUN_TB = 26.09, RUN_SCENES = 586791, PEAK_DAY = 1225, MEDIAN_DAY = 620;
+  var GB_PER_MOSAIC = 2.40;
+
+  var num = function (n) { return n.toLocaleString('en-US'); };
+
+  /* ================= the coverage chart ============================ */
+
+  var CH = {
+    w: 880, h: 288, left: 44, right: 14, top: 38, bottom: 30,
+    max: CELLS
+  };
+
+  function chartSVG() {
+    var plotW = CH.w - CH.left - CH.right;
+    var plotH = CH.h - CH.top - CH.bottom;
+    var base = CH.top + plotH;
+    var step = plotW / BUILT_BY_YEAR.length;
+    var barW = Math.min(14, step - 6);
+    var y = function (v) { return base - (v / CH.max) * plotH; };
+    var s = [];
+
+    // grid + y ticks
+    [0, 100, 200, CELLS].forEach(function (t) {
+      var yy = y(t);
+      s.push('<line class="g-line" x1="' + CH.left + '" y1="' + yy.toFixed(1) + '" x2="' + (CH.w - CH.right) +
+             '" y2="' + yy.toFixed(1) + '" />');
+      s.push('<text class="g-lab" x="' + (CH.left - 10) + '" y="' + (yy + 4).toFixed(1) +
+             '" text-anchor="end">' + t + '</text>');
+    });
+
+    BUILT_BY_YEAR.forEach(function (r, i) {
+      var year = r[0], built = r[1], miss = CELLS - built;
+      var cx = CH.left + step * i + step / 2;
+      var x = cx - barW / 2;
+      var yBuilt = y(built);
+      // delivered, anchored to the baseline
+      s.push('<rect class="b-built" x="' + x.toFixed(1) + '" y="' + yBuilt.toFixed(1) + '" width="' + barW.toFixed(1) +
+             '" height="' + (base - yBuilt).toFixed(1) + '" rx="2" />');
+      // not built, 2px of surface between the two fills
+      if (miss > 0) {
+        var topY = y(CELLS);
+        var hh = yBuilt - topY - 2;
+        if (hh > 0.5) {
+          s.push('<rect class="b-miss" x="' + x.toFixed(1) + '" y="' + topY.toFixed(1) + '" width="' + barW.toFixed(1) +
+                 '" height="' + hh.toFixed(1) + '" rx="2" />');
+        }
+      }
+      // x labels every five years, plus the first year
+      if (year === 1986 || year % 5 === 0) {
+        s.push('<text class="g-lab" x="' + cx.toFixed(1) + '" y="' + (base + 18) +
+               '" text-anchor="middle">' + year + '</text>');
+      }
+    });
+
+    // one direct label, in the margin above the plot: the year the archive itself is thin
+    var lx = CH.left + step * 0.5;
+    s.push('<text class="g-annot" x="' + lx.toFixed(1) + '" y="14" text-anchor="start">' +
+           '1986 — only 30 of 283 cells have a usable scene</text>');
+    s.push('<line class="g-line" x1="' + lx.toFixed(1) + '" y1="20" x2="' + lx.toFixed(1) +
+           '" y2="' + (CH.top - 2) + '" />');
+
+    // hit targets
+    BUILT_BY_YEAR.forEach(function (r, i) {
+      s.push('<rect class="hit" data-i="' + i + '" x="' + (CH.left + step * i).toFixed(1) + '" y="' + CH.top +
+             '" width="' + step.toFixed(1) + '" height="' + plotH + '" fill="transparent" />');
+    });
+
+    return '<svg viewBox="0 0 ' + CH.w + ' ' + CH.h + '" role="img" ' +
+      'aria-label="Cells delivered per phenological year, 1986 to 2025, out of 283 cells.">' +
+      s.join('') + '</svg>';
+  }
+
+  /* ================= the run-profile chart =========================
+     Two plots stacked on one shared x axis: mosaics finished each day, and the
+     cumulative total underneath. Two plots rather than two y scales on one —
+     a dual axis would invite reading a crossing point that means nothing. */
+
+  var RP = {
+    w: 880, h: 340, left: 52, right: 16,
+    top: 34, barH: 156,        // daily plot
+    cumTop: 232, cumH: 74,     // cumulative plot
+    dayMax: 1300, cumMax: PLAN
+  };
+
+  function runProfileSVG() {
+    var plotW = RP.w - RP.left - RP.right;
+    var step = plotW / DAILY.length;
+    var barW = Math.min(30, step - 8);
+    var barBase = RP.top + RP.barH;
+    var cumBase = RP.cumTop + RP.cumH;
+    var yDay = function (v) { return barBase - (v / RP.dayMax) * RP.barH; };
+    var yCum = function (v) { return cumBase - (v / RP.cumMax) * RP.cumH; };
+    var s = [];
+
+    // daily plot: grid and ticks
+    [0, 500, 1000].forEach(function (t) {
+      var y = yDay(t);
+      s.push('<line class="g-line" x1="' + RP.left + '" y1="' + y.toFixed(1) +
+             '" x2="' + (RP.w - RP.right) + '" y2="' + y.toFixed(1) + '" />');
+      s.push('<text class="g-lab" x="' + (RP.left - 10) + '" y="' + (y + 4).toFixed(1) +
+             '" text-anchor="end">' + num(t) + '</text>');
+    });
+
+    // the stall: 6 and 7 September. Drawn before everything it marks, so the
+    // two short columns inside it stay their own colour.
+    var sx = RP.left + step * 2, sw = step * 2;
+    s.push('<rect class="a-stall" x="' + sx.toFixed(1) + '" y="' + RP.top +
+           '" width="' + sw.toFixed(1) + '" height="' + RP.barH + '" />');
+    s.push('<text class="g-lab" x="' + (sx + sw / 2).toFixed(1) + '" y="' + (RP.top - 6) +
+           '" text-anchor="middle">queue stall</text>');
+
+    // cumulative area, built first so the daily columns read as the foreground
+    var pts = DAILY.map(function (d, i) {
+      return [RP.left + step * i + step / 2, 0];
+    });
+    var running = 0;
+    DAILY.forEach(function (d, i) { running += d[1]; pts[i][1] = yCum(running); });
+    // the area closes on the last day, not on the plot edge: nothing was
+    // delivered after the 21st and the fill should not imply otherwise
+    var last = pts[pts.length - 1];
+    var area = 'M' + RP.left + ',' + cumBase +
+      pts.map(function (p) { return ' L' + p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join('') +
+      ' L' + last[0].toFixed(1) + ',' + cumBase + ' Z';
+    s.push('<path class="a-fill" d="' + area + '" />');
+    s.push('<path class="a-line" d="M' + pts.map(function (p) {
+      return p[0].toFixed(1) + ',' + p[1].toFixed(1);
+    }).join(' L') + '" />');
+    s.push('<line class="g-line" x1="' + RP.left + '" y1="' + cumBase + '" x2="' +
+           (RP.w - RP.right) + '" y2="' + cumBase + '" />');
+    s.push('<text class="g-lab" x="' + (RP.left - 10) + '" y="' + (cumBase + 4) +
+           '" text-anchor="end">0</text>');
+    s.push('<text class="g-lab" x="' + (RP.left - 10) + '" y="' + (yCum(PLAN) + 4).toFixed(1) +
+           '" text-anchor="end">' + num(PLAN) + '</text>');
+
+    // daily columns
+    DAILY.forEach(function (d, i) {
+      var cx = RP.left + step * i + step / 2;
+      var x = cx - barW / 2;
+      var y = yDay(d[1]);
+      s.push('<rect class="b-built" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
+             '" width="' + barW.toFixed(1) + '" height="' + (barBase - y).toFixed(1) + '" rx="2" />');
+      s.push('<text class="g-lab" x="' + cx.toFixed(1) + '" y="' + (barBase + 18) +
+             '" text-anchor="middle">' + d[0].slice(3) + '</text>');
+    });
+
+    // two annotations, both in the top margin so nothing overlaps a column
+    var peakIdx = 0, peakVal = 0;
+    DAILY.forEach(function (d, i) { if (d[1] > peakVal) { peakVal = d[1]; peakIdx = i; } });
+    var px = RP.left + step * peakIdx + step / 2;
+    s.push('<text class="g-annot" x="' + px.toFixed(1) + '" y="18" text-anchor="middle">' +
+           num(peakVal) + '</text>');
+    s.push('<line class="g-line" x1="' + px.toFixed(1) + '" y1="24" x2="' + px.toFixed(1) +
+           '" y2="' + (yDay(peakVal) - 3).toFixed(1) + '" />');
+
+    // shared axis caption
+    s.push('<text class="g-lab" x="' + (RP.w - RP.right) + '" y="' + (RP.h - 4) +
+           '" text-anchor="end">September 2026</text>');
+    s.push('<text class="g-lab" x="' + RP.left + '" y="' + (RP.cumTop - 8) +
+           '" text-anchor="start">cumulative delivered</text>');
+
+    // hit targets span both plots
+    DAILY.forEach(function (d, i) {
+      s.push('<rect class="hit" data-i="' + i + '" x="' + (RP.left + step * i).toFixed(1) +
+             '" y="' + RP.top + '" width="' + step.toFixed(1) +
+             '" height="' + (cumBase - RP.top) + '" fill="transparent" />');
+    });
+
+    return '<svg viewBox="0 0 ' + RP.w + ' ' + RP.h + '" role="img" ' +
+      'aria-label="Mosaics completed each day of the run, 4 to 21 September 2026, and the ' +
+      'cumulative total against the ' + num(PLAN) + '-image plan.">' + s.join('') + '</svg>';
+  }
+
+  /* Chart tooltips, by delegation on the document.
+
+     Not an effect and not a requestAnimationFrame callback: React 18 commits
+     asynchronously, so a chart wired on the next frame can be wired before the
+     SVG exists — which is exactly what happened when this page grew a second
+     chart. Delegation has no timing dependency at all. */
+
+  var CHART_TIPS = {
+    chartframe: function (i) {
+      var r = BUILT_BY_YEAR[i], miss = CELLS - r[1];
+      return '<b>' + r[0] + '</b> \u00b7 <b>' + r[1] + '</b> delivered' +
+        (miss ? ' \u00b7 <b>' + miss + '</b> not built' : ' \u00b7 complete');
+    },
+    runframe: function (i) {
+      var d = DAILY[i];
+      return '<b>' + d[0].slice(3) + ' Sep</b> \u00b7 <b>' + num(d[1]) + '</b> finished \u00b7 <b>' +
+        num(d[2]) + '</b> queued \u00b7 <b>' + d[3].toFixed(0) + '</b> GB';
+    }
+  };
+
+  var PAD = 8;
+
+  function hideTips(except) {
+    var tips = document.querySelectorAll('.chart-frame .tip');
+    for (var i = 0; i < tips.length; i++) {
+      if (tips[i] !== except) tips[i].style.opacity = '0';
+    }
+  }
+
+  function onPointerMove(e) {
+    var target = e.target;
+    if (!target || !target.closest) { hideTips(null); return; }
+    var frame = target.closest('.chart-frame');
+    if (!frame) { hideTips(null); return; }
+    var tip = frame.querySelector('.tip');
+    var describe = CHART_TIPS[frame.id];
+    var hit = target.closest('.hit');
+    if (!tip || !describe || !hit) { hideTips(null); return; }
+    hideTips(tip);
+
+    tip.innerHTML = describe(+hit.getAttribute('data-i'));
+    tip.style.opacity = '1';
+
+    // Measure after the text is in, and place in the frame's own coordinates.
+    var fr = frame.getBoundingClientRect();
+    var hr = hit.getBoundingClientRect();
+    var tw = tip.offsetWidth, th = tip.offsetHeight;
+
+    // Centre on the hovered column, then keep the whole box inside the frame.
+    var x = hr.left - fr.left + hr.width / 2;
+    var half = tw / 2;
+    x = Math.max(half + PAD, Math.min(fr.width - half - PAD, x));
+
+    // Sit above the pointer; flip below when there is no room above.
+    var y = e.clientY - fr.top - 12;
+    var flip = (y - th) < PAD;
+    tip.style.transform = flip ? 'translate(-50%, 0)' : 'translate(-50%, -100%)';
+    tip.style.top = (flip ? y + 28 : y) + 'px';
+    tip.style.left = x + 'px';
+  }
+
+  function wireCharts() {
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerleave', function () { hideTips(null); });
+    // a chart that scrolls sideways would leave its tooltip behind
+    document.addEventListener('scroll', function (e) {
+      if (e.target && e.target.classList && e.target.classList.contains('chart-scroll')) hideTips(null);
+    }, true);
+  }
+
+  /* ================= sections ====================================== */
+
+  function head(eyebrow, title, lede) {
+    return h('div', { className: 'head' },
+      h('p', { className: 'eyebrow' }, eyebrow),
+      h('h2', { className: 't-lg-strong ink-max' }, title),
+      lede ? h('p', { className: 'lede justify' }, lede) : null
+    );
+  }
+
+  function figureCard(value, label, note) {
+    return h(DS.Card, null,
+      h('div', { className: 'figure' },
+        h('span', { className: 'label' }, label),
+        h('span', { className: 'value' }, value),
+        h('span', { className: 'note' }, note)
+      )
+    );
+  }
+
+  function Cover() {
+    return h('section', { className: 'cover' },
+      h('div', { className: 'lockup' },
+        raw(document.querySelector('.topbar .mark').innerHTML),
+        h('span', { className: 'name' }, 'MapBiomas India')
+      ),
+      h('p', { className: 'eyebrow' }, 'Production run · delivery report'),
+      h('h1', null, 'Annual Landsat mosaics for India, 1986–2025'),
+      h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' } },
+        h(DS.StatusPill, { tone: 'active' }, 'Delivered — ' + PCT + '%'),
+        h(DS.Badge, { tone: 'custom' }, 'v2'),
+        h(DS.MetaStrip, {
+          state: { label: 'National run closed', tone: 'active', icon: 'CircleCheck' },
+          items: ['22 Sep 2026', num(BUILT) + ' of ' + num(PLAN) + ' cell-years', 'collection mosaics-2']
+        })
+      ),
+      h('div', { className: 'prose justify' },
+        raw('<p>The national production run of the v2 mosaics is closed. Of the ' + num(PLAN) +
+            ' planned cell-years — <strong>' + CELLS + ' cells</strong> of the 1:250,000 CIM grid across ' +
+            '<strong>' + YEARS + ' phenological years</strong> — <strong>' + num(BUILT) +
+            ' were built and written to the production collection</strong>.</p>' +
+            '<p>The ' + MISSING + ' that were not are accounted for one by one: ' + 463 +
+            ' are archive gaps where no usable Landsat granule exists, 8 are blocked by a single ' +
+            'guard missing from the topographic step, and 2 are exports that stall inside Earth Engine. ' +
+            'None of them is an unexplained loss.</p>')
+      ),
+      h('div', { className: 'meter' },
+        h('div', { className: 'track', role: 'img', 'aria-label': PCT + '% of the plan delivered' },
+          h('i', { style: { flex: BUILT, background: 'var(--color-primary-700)' } }),
+          h('i', { style: { flex: MISSING, background: 'var(--color-neutral-300)' } })
+        ),
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: '16px' } },
+          h('span', { className: 't-note ink-second' }, num(BUILT) + ' delivered'),
+          h('span', { className: 't-note ink-second' }, num(MISSING) + ' not built')
+        )
+      )
+    );
+  }
+
+  function Figures() {
+    return h('div', { className: 'figures' },
+      figureCard(num(BUILT), 'Mosaics delivered', PCT + '% of the ' + num(PLAN) + '-image plan'),
+      figureCard(CELLS + ' × ' + YEARS, 'Cells × years', '1:250,000 CIM grid, roughly 111 × 150 km a cell'),
+      figureCard('117', 'Bands per image', '32 of them stored in narrow integer types'),
+      figureCard('30 m', 'Ground sample distance', 'Landsat Collection 2, Tier 1, Level 2')
+    );
+  }
+
+  function Product() {
+    return h('section', { id: 'product' },
+      head('The product', 'One image per cell, per phenological year',
+        'A mosaic is a single annual image for one grid cell, composed from every usable Landsat scene ' +
+        'that fell on it during the agricultural year.'),
+      h('div', { className: 'two-col' },
+        h(DS.Card, { title: 'What one image covers' },
+          h('div', { className: 'card-body justify' },
+            h('dl', null,
+              raw('<dt>Phenological year</dt><dd>1 April of year Y to 31 March of Y+1, following the ' +
+                  'agricultural calendar. “2019” means April 2019 through March 2020.</dd>' +
+                  '<dt>Spatial unit</dt><dd>One cell of the 1:250,000 CIM grid — 283 of them tile the ' +
+                  'classification regions of India.</dd>' +
+                  '<dt>Period</dt><dd>1986 to 2025, forty consecutive phenological years.</dd>' +
+                  '<dt>Resolution</dt><dd>30 m, the native Landsat grid.</dd>')
+            )
+          )
+        ),
+        h(DS.Card, { title: 'What the 117 bands hold' },
+          h('div', { className: 'card-body justify' },
+            h(DS.AttributeList, {
+              items: [
+                { icon: 'Layers', label: 'Reflectance medians across the year and the dry/wet quartiles' },
+                { icon: 'Sprout', label: 'Spectral indices — NDVI, NDWI, EVI2 and the rest of the index family' },
+                { icon: 'ChartPie', label: 'SMA family: gv, npv, soil, shade and NDFI — 24 bands' },
+                { icon: 'Waves', label: 'Seasonality: swing (p95 − p5) and MAD, per band' },
+                { icon: 'Mountain', label: 'Terrain: elevation, slope, aspect and illumination' },
+                { icon: 'Hash', label: 'Provenance counts and pixel coordinates' }
+              ]
+            }),
+            raw('<p style="margin-top:8px">The full contract is pinned offline by ' +
+                '<span class="path">tests/test_pipeline_contract.py</span> and documented in ' +
+                '<span class="path">docs/band_and_property_contract.md</span>.</p>')
+          )
+        )
+      )
+    );
+  }
+
+  function Method() {
+    return h('section', { id: 'method' },
+      head('Method', 'The order of operations is the method',
+        'Each correction assumes the previous one has already run. The sequence below is the one ' +
+        'enforced by the builder; changing it changes the physics, not just the plumbing.'),
+      h('div', { className: 'steps' },
+        STEPS.map(function (s, i) {
+          return h('div', { className: 'step', key: s[0] },
+            h('span', { className: 'n' }, String(i + 1).padStart(2, '0')),
+            h('span', { className: 'k' }, s[0]),
+            h('span', { className: 'w' }, s[1])
+          );
+        })
+      ),
+      h('div', { className: 'three-col' },
+        h(DS.Card, { title: 'Sources' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Landsat Collection 2, Tier 1, Level 2 surface reflectance — L5, L7, L8 and L9 as ' +
+                'each year allows, filtered at <span class="path">CLOUD_COVER &lt; 95</span>.</p>' +
+                '<p>Level 2 carries no illumination geometry, so the collection is inner-joined with ' +
+                'Level 1 for the four angle bands (SZA, SAA, VZA, VAA).</p>' +
+                '<p>SLC-off L7 is admitted only into quarters where the clean sensors run thin, so the ' +
+                'striping is not injected into an otherwise complete season.</p>')
+          )
+        ),
+        h(DS.Card, { title: 'Radiometry' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>BRDF normalisation to nadir by the c-factor of Roy et al. (2016), on RTLSR kernels.</p>' +
+                '<p>Sensor harmonisation keeps the forty-year series continuous across instruments: ' +
+                'TM→ETM+ derived from India’s own 1999–2011 overlap, ETM+→OLI from Roy (2016).</p>' +
+                '<p>Row overlap is de-duplicated by pass key before compositing, so a pixel seen twice ' +
+                'on one date is counted once.</p>')
+          )
+        ),
+        h(DS.Card, { title: 'Terrain and masking' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Topographic correction is SCS+C with a <strong>physical</strong> C coefficient read ' +
+                'per sensor from 6S tables, with MERRA-2 aerosol optical thickness and water vapour at ' +
+                'the hour of overpass.</p>' +
+                '<p>Cloud and shadow are removed by a witness mask: Collection 2 QA bits combined with a ' +
+                'per-pixel thermal witness built from that pixel’s clear-sky history. Both must agree.</p>')
+          )
+        )
+      ),
+      h('div', { className: 'two-col' },
+        h(DS.Card, { title: 'Compositing' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Per pixel, the year is reduced to a median plus a dry and a wet composite — the p25 ' +
+                'and p75 of the observations ordered by NDVI — and two measures of how far the pixel ' +
+                'travelled during the year: swing (p95 − p5) and the median absolute deviation.</p>' +
+                '<p>Reducing by quartile rather than by calendar month keeps the composites comparable ' +
+                'across a country whose monsoon arrives on very different dates.</p>')
+          )
+        ),
+        h(DS.Card, { title: 'Spectral mixture analysis' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Twenty-four bands of gv, npv, soil, shade and NDFI, unmixed in the ×10,000 space the ' +
+                'endmembers were calibrated in.</p>' +
+                '<p>The endmembers are <strong>inherited from the Amazon</strong> and were not re-derived ' +
+                'for India. This is recorded in the pre-flight and is the first thing to revisit if the ' +
+                'SMA bands disagree with field expectation.</p>')
+          )
+        )
+      ),
+      h(DS.InfoBanner, { icon: 'BookOpen' },
+        'The authoritative description of the method is the ATBD (docs/IOLN Landsat Mosaics ATBD.pdf); ' +
+        'every tunable value lives in pipeline/config.py. This report records the run, not the algorithm.')
+    );
+  }
+
+  function Coverage() {
+    var complete = BUILT_BY_YEAR.filter(function (r) { return r[1] === CELLS; }).length;
+    return h('section', { id: 'coverage' },
+      head('Coverage', 'What the archive allowed, year by year',
+        'Each column is one phenological year against the full ' + CELLS + '-cell grid. Where a column ' +
+        'falls short, the Landsat archive itself is short — not the pipeline.'),
+      h(DS.Panel, { title: 'Cells delivered per phenological year', padding: 24 },
+        h('div', { className: 'chart-head' },
+          h('div', { className: 'legend' },
+            h('span', null, h('i', { style: { background: 'var(--color-primary-700)' } }), 'Delivered'),
+            h('span', null, h('i', { style: { background: 'var(--color-neutral-300)' } }), 'Not built')
+          ),
+          h('span', { className: 't-note ink-second' }, 'Full height = ' + CELLS + ' cells')
+        ),
+        h('div', { className: 'chart-frame', id: 'chartframe' },
+          h('div', { className: 'chart-scroll' }, raw(chartSVG())),
+          h('div', { className: 'tip' })
+        ),
+        h('div', { style: { marginTop: '16px' } },
+          h('details', null,
+            h('summary', null, 'Figures behind the chart'),
+            h('div', { className: 'table-scroll' },
+              h('table', null,
+                h('caption', null, 'Cells delivered and not built, out of ' + CELLS + ', per phenological year.'),
+                h('thead', null, h('tr', null,
+                  h('th', null, 'Year'), h('th', { className: 'n' }, 'Delivered'),
+                  h('th', { className: 'n' }, 'Not built'), h('th', { className: 'n' }, 'Coverage')
+                )),
+                h('tbody', null, BUILT_BY_YEAR.map(function (r) {
+                  return h('tr', { key: r[0] },
+                    h('td', { className: 'k num' }, r[0]),
+                    h('td', { className: 'n' }, r[1]),
+                    h('td', { className: 'n' }, CELLS - r[1]),
+                    h('td', { className: 'n' }, (r[1] / CELLS * 100).toFixed(1) + '%')
+                  );
+                }))
+              )
+            )
+          )
+        )
+      ),
+      h('div', { className: 'prose justify' },
+        raw('<p><strong>1986 is the thin year</strong>: 30 cells of 283. Only Landsat 5 was flying, on a ' +
+            'single pass, and much of the Indian archive from that year was never downlinked or never ' +
+            'survived. 1987 and 1988 recover to about 220, and from 1989 the series is above 95% every ' +
+            'year but 1998.</p>' +
+            '<p>From 1999 onward the grid is essentially complete: <strong>' + complete + ' of the forty years ' +
+            'deliver all ' + CELLS + ' cells</strong>, and the remaining shortfalls are one or three cells ' +
+            'held back by the two defects described below, not by the archive.</p>')
+      )
+    );
+  }
+
+  function NationalGrid() {
+    return h('section', { id: 'national' },
+      head('National scale', 'Forty years of India, one tile a year',
+        'Every phenological year mosaicked to the whole country, at the same extent and the same ' +
+        'stretch, so the tiles are comparable to each other. Read left to right, top to bottom, and ' +
+        'the archive fills in: what changes between tiles is how much of India a year could see.'),
+      h('div', { className: 'years' },
+        BUILT_BY_YEAR.map(function (r) {
+          var year = r[0], built = r[1];
+          return h('figure', { className: 'year-tile', key: year, 'data-thin': built < CELLS ? '1' : '0' },
+            h('img', {
+              src: IMG['india_' + year],
+              alt: 'National mosaic of India for the ' + year + ' phenological year, ' +
+                   built + ' of ' + CELLS + ' cells delivered',
+              loading: 'lazy', width: 450, height: 480
+            }),
+            h('figcaption', null,
+              h('span', { className: 'y' }, year),
+              h('span', { className: 'c' }, built + '/' + CELLS)
+            )
+          );
+        })
+      ),
+      h(DS.InfoBanner, { icon: 'Crop' },
+        'Black is not one thing. Around the country it is the region mask, the last step of the build, ' +
+        'which drops every pixel outside the union of the classification regions — so the outline you ' +
+        'read as India is the mask, not the sensor. Black cutting across the interior is the archive: ' +
+        'cells with no usable scene that year. The bands through 1987 and 1988 are whole Landsat rows ' +
+        'that were never downlinked.'),
+      h('p', { className: 't-note ink-second' },
+        'Red, green and blue medians stretched 0–4,000 at gamma 1.3, the parameters in ' +
+        'docs/visualize_stuck_mosaics.js. The count under each tile is the cells delivered that year.')
+    );
+  }
+
+  function Outcome() {
+    return h('section', { id: 'outcome' },
+      head('Outcome', 'Every planned image accounted for',
+        'The plan is ' + num(PLAN) + ' images. The collection is the source of truth for what was ' +
+        'delivered; the remainder is classified by cause.'),
+      h(DS.Panel, { title: 'Reconciliation against the plan', padding: 0 },
+        h('div', { className: 'table-scroll table-flush' },
+          h('table', null,
+            h('thead', null, h('tr', null,
+              h('th', null, 'Outcome'), h('th', { className: 'n' }, 'Cell-years'),
+              h('th', { className: 'n' }, 'Share'), h('th', null, 'Why')
+            )),
+            h('tbody', null, OUTCOMES.map(function (o) {
+              return h('tr', { key: o.k },
+                h('td', null, h(DS.StatusPill, { tone: o.tone }, o.k)),
+                h('td', { className: 'n ink-max', style: { fontWeight: 700 } }, num(o.n)),
+                h('td', { className: 'n' }, (o.n / PLAN * 100).toFixed(o.n < 100 ? 2 : 1) + '%'),
+                h('td', null, o.w)
+              );
+            }))
+          )
+        )
+      ),
+      h('div', { className: 'two-col' },
+        h(DS.Card, { title: 'The eight blocked cells' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Each has between one and six granules, but the 6S overpass table for them comes back ' +
+                'empty and the topographic step calls <span class="path">len()</span> on it.</p>' +
+                '<p><span class="path">NC-43-Y-C</span> (1989, 2000, 2010) · ' +
+                '<span class="path">NC-44-Y-C_1989</span> · <span class="path">NG-46-Z-D_1986</span> · ' +
+                '<span class="path">NH-44-X-C_1987</span> · <span class="path">NI-43-V-C_1986</span> · ' +
+                '<span class="path">NI-44-Y-D_1988</span></p>' +
+                '<p>Treating an empty table as “no correction available” instead of an error releases all ' +
+                'eight. The guard has not been written yet.</p>')
+          )
+        ),
+        h(DS.Card, { title: 'A quality caveat worth reading' },
+          h('div', { className: 'card-body justify' },
+            raw('<p>Some L5 and L7 passes have no matching row in the 6S table for their cell and date. ' +
+                'Those passes are shipped <strong>without topographic correction</strong>, with a ' +
+                '<span class="path">WARNING … ship UNCORRECTED</span> in the run log.</p>' +
+                '<p>The images are delivered and usable; the affected passes carry a slope-dependent ' +
+                'illumination bias. Quantifying that bias is an open item.</p>')
+          )
+        )
+      )
+    );
+  }
+
+  function Gallery() {
+    return h('section', { id: 'mosaics' },
+      head('The images', 'Six mosaics, six landscapes',
+        'True-colour renderings (red, green and blue medians) of delivered cells, chosen across very ' +
+        'different biomes so the composites can be judged against terrain the reader recognises. All ' +
+        'six are interior cells above 99% valid pixels, so what you see is the whole frame.'),
+      h('div', { className: 'gallery' },
+        MOSAICS.map(function (m) {
+          return h('figure', { key: m[0] },
+            h('img', {
+              src: IMG[m[0]],
+              alt: 'True-colour mosaic of cell ' + m[0].split('_')[0] + ', ' + m[0].split('_')[1] + ' — ' + m[1],
+              loading: 'lazy', width: 560, height: 375
+            }),
+            h('figcaption', null,
+              h('span', { className: 'id' }, m[0]),
+              h('span', { className: 'where' }, m[1])
+            )
+          );
+        })
+      ),
+      h('p', { className: 't-note ink-second' },
+        'Rendered from the delivered assets at the stretch used by docs/visualize_stuck_mosaics.js.')
+    );
+  }
+
+  function RunProfile() {
+    var days = DAILY.length;
+    var core = DAILY.filter(function (d) { return d[0] <= '09-17'; });
+    var coreDone = core.reduce(function (a, d) { return a + d[1]; }, 0);
+    return h('section', { id: 'throughput' },
+      head('Run profile', 'What a day of production actually delivers',
+        'Every delivered image carries the moment Earth Engine finished writing it, so the run can ' +
+        'be reconstructed day by day after the fact. These are the numbers to plan the next big ' +
+        'reprocessing against — they are measured, not estimated.'),
+      h('div', { className: 'figures' },
+        figureCard(days + ' days', 'Calendar span', '4 to 21 September 2026, start to last straggler'),
+        figureCard(num(PEAK_DAY), 'Best day', '8 September — about 51 mosaics an hour sustained'),
+        figureCard(num(MEDIAN_DAY), 'Median day', 'the rate to plan with, not the peak'),
+        figureCard(RUN_TB + ' TB', 'Written', num(RUN_SCENES) + ' Landsat scenes consumed')
+      ),
+      h(DS.Panel, { title: 'Mosaics finished per day, and the cumulative total', padding: 24 },
+        h('div', { className: 'chart-head' },
+          h('div', { className: 'legend' },
+            h('span', null, h('i', { style: { background: 'var(--color-primary-700)' } }), 'Finished that day'),
+            h('span', null, h('i', { style: { background: 'var(--color-primary-200)' } }), 'Cumulative against the plan')
+          )
+        ),
+        h('div', { className: 'chart-frame', id: 'runframe' },
+          h('div', { className: 'chart-scroll' }, raw(runProfileSVG())),
+          h('div', { className: 'tip' })
+        ),
+        h('div', { style: { marginTop: '16px' } },
+          h('details', null,
+            h('summary', null, 'Figures behind the chart'),
+            h('div', { className: 'table-scroll' },
+              h('table', null,
+                h('caption', null,
+                  'Finished is the asset write time; queued is the pipeline’s own build stamp. ' +
+                  'Both read from the delivered assets by docs/run_daily_throughput.py.'),
+                h('thead', null, h('tr', null,
+                  h('th', null, 'Date'), h('th', { className: 'n' }, 'Finished'),
+                  h('th', { className: 'n' }, 'Queued'), h('th', { className: 'n' }, 'GB written'),
+                  h('th', { className: 'n' }, 'Cumulative')
+                )),
+                h('tbody', null, (function () {
+                  var running = 0;
+                  return DAILY.map(function (d) {
+                    running += d[1];
+                    return h('tr', { key: d[0] },
+                      h('td', { className: 'k num' }, d[0].slice(3) + ' Sep'),
+                      h('td', { className: 'n' }, num(d[1])),
+                      h('td', { className: 'n' }, num(d[2])),
+                      h('td', { className: 'n' }, d[3].toFixed(0)),
+                      h('td', { className: 'n' }, num(running))
+                    );
+                  });
+                })())
+              )
+            )
+          )
+        )
+      ),
+      h('div', { className: 'prose justify' },
+        raw('<p>The shape is not a smooth ramp, and it was never going to be. The queue has a ceiling ' +
+            'per account, so the run was fed in <strong>sittings</strong>: the tall queued days — ' +
+            '2,394 on the 8th, 2,711 on the 14th — are someone refilling it, and the days that follow ' +
+            'are that backlog draining. Delivery is steady around ' + num(MEDIAN_DAY) +
+            ' a day whenever the queue has work in it.</p>' +
+            '<p><strong>The two flat days are the incident below.</strong> On 5 September the run ' +
+            'delivered 1,131 mosaics; on the 6th it delivered 70, and on the 7th 139. Nothing was ' +
+            'resubmitted on either day — the queue was full of exports that were computing but being ' +
+            'cancelled at six hours. The 8th, after the threshold was raised, is the best day of the ' +
+            'whole run.</p>' +
+            '<p><strong>' + coreDone.toLocaleString('en-US') + ' of ' + num(BUILT) + ' landed in the first ' +
+            core.length + ' days.</strong> The four-day tail is 48 stragglers — re-queued failures and ' +
+            'the cells that needed a second attempt. Plan the bulk, then plan a tail.</p>')
+      ),
+      h(DS.Card, { title: 'Planning the next one' },
+        h('div', { className: 'card-body' },
+          h(DS.AttributeList, {
+            items: [
+              { icon: 'CalendarClock', label: 'A full national reprocess, all ' + num(PLAN) +
+                ' images: about 18 days at the median rate — the run just closed is the benchmark' },
+              { icon: 'CalendarPlus', label: 'One new year, 283 cells: half a day and roughly 0.7 TB' },
+              { icon: 'HardDrive', label: 'Storage: ' + GB_PER_MOSAIC.toFixed(1) +
+                ' GB a mosaic on average, so budget by cell-years, not by year' },
+              { icon: 'Layers', label: 'About 54 Landsat scenes go into each delivered image' },
+              { icon: 'TriangleAlert', label: 'Do not plan against the peak: 1,225 happened once, ' +
+                'with a drained queue and nothing else competing' }
+            ]
+          })
+        )
+      )
+    );
+  }
+
+  function Incident() {
+    return h('section', { id: 'incident' },
+      head('Incident', 'The exports that would not finish',
+        'Midway through the run, throughput collapsed. The cause turned out to be the remedy we were ' +
+        'applying, which is why it is worth recording.'),
+      h('div', { className: 'prose justify' },
+        raw('<p>A median export takes about <strong>41 minutes</strong>. During the run a growing subset ' +
+            'sat in <span class="path">RUNNING</span> for six to forty-seven hours. At the worst point ' +
+            '<strong>28 of the 50 slots</strong> were held by them and delivery fell from roughly 50 to ' +
+            '22 mosaics an hour.</p>' +
+            '<p>The tasks looked stuck, so a six-hour auto-cancel was culling them. Reading ' +
+            '<span class="path">batchEecuUsageSeconds</span> on the cancelled operations showed the ' +
+            'opposite: they carried 35k to 450k EECU-seconds and were still <strong>climbing</strong>. ' +
+            'They were computing, slowly, and the auto-cancel was destroying finished work.</p>' +
+            '<p>The measurement that settled it: <span class="path">NG-43-X-D_2017</span>, 250 granules, ' +
+            'one of the “stuck” cells. Relaunched against an empty queue it finished in ' +
+            '<strong>1.8 hours</strong>.</p>')
+      ),
+      h(DS.Card, { title: 'Same cell, same graph — EECU consumed per second' },
+        h('div', { className: 'card-body justify' },
+          h('div', { className: 'compare' },
+            h('div', { className: 'row' },
+              h('span', { className: 'lab' }, 'Empty queue'),
+              h('span', { className: 'bar', style: { width: '100%', background: 'var(--color-primary-700)' } }),
+              h('span', { className: 'val' }, '~74/s')
+            ),
+            h('div', { className: 'row' },
+              h('span', { className: 'lab' }, 'Under contention'),
+              h('span', { className: 'bar', style: { width: '23%', background: 'var(--color-neutral-400)' } }),
+              h('span', { className: 'val' }, '13–21/s')
+            )
+          ),
+          raw('<p style="margin-top:8px">Queue contention, not a defect in the graph. ' +
+              '<span class="path">shardSize=32</span> and tighter cloud filters (60 / 40 / 30%) were ' +
+              'tried first and changed nothing: the limit sits in the graph, and the pre-computed ' +
+              'overpass and witness tables still run to 250 granules.</p>')
+        )
+      ),
+      h('div', { className: 'prose justify' },
+        raw('<p><strong>Resolution.</strong> The held cells were relaunched against a drained queue: ' +
+            '<strong>69 of 71 completed</strong>, at about two hours each. The auto-cancel threshold was ' +
+            'raised from 6 to 48 hours, and the run was finished in sittings rather than as one ' +
+            'continuous queue.</p>' +
+            '<p>The rule that came out of it: wall-clock does not tell you whether an export is stuck. ' +
+            'Rising EECU means it is computing and should be left alone; EECU frozen for hours is a real ' +
+            'stall. The two remaining failures are the frozen kind.</p>')
+      )
+    );
+  }
+
+  function Next() {
+    var ITEMS = [
+      ['Two genuinely stalled exports', 'NH-44-V-A_2021 and NI-43-Z-D_2019 freeze at 44% and 73% of their ' +
+        'expected EECU. Find the scene that stalls them.', 'failed', 'Open'],
+      ['The empty-overpass guard', 'Treat an empty 6S table as “no correction available” in topo_physics. ' +
+        'Releases eight cell-years at no cost.', 'pending', 'Ready to fix'],
+      ['Quantify the UNCORRECTED passes', 'Measure the illumination bias left in the L5/L7 passes that ' +
+        'shipped without topographic correction.', 'pending', 'To assess'],
+      ['Retire the v1 collection', 'INDIA/mosaics-1 still holds about 47 TB. It is a candidate for removal ' +
+        'once v2 has replaced it in the downstream classification.', 'inactive', 'Deferred']
+    ];
+    return h('section', { id: 'next' },
+      head('Open items', 'What is left, and what it costs',
+        'None of these blocks use of the delivered collection.'),
+      h('div', { className: 'items' },
+        ITEMS.map(function (it) {
+          return h('div', { className: 'item', key: it[0] },
+            h('div', { className: 'what justify' },
+              h('span', { className: 'k' }, it[0]),
+              h('span', { className: 'w' }, it[1])
+            ),
+            h(DS.StatusPill, { tone: it[2] }, it[3])
+          );
+        })
+      )
+    );
+  }
+
+  function Access() {
+    return h('section', { id: 'access' },
+      head('Access', 'Where the data is and how to read it',
+        'The collection is the delivery. Everything else in this report describes how it was made.'),
+      h('div', { className: 'two-col' },
+        h(DS.Card, { title: 'The collection' },
+          h('div', { className: 'card-body justify' },
+            h('dl', null,
+              raw('<dt>Earth Engine asset</dt><dd><span class="path path-block">' +
+                  'projects/mapbiomas-mosaics/assets/LANDSAT/LULC/INDIA/mosaics-2</span></dd>' +
+                  '<dt>Image id</dt><dd><span class="path">CELL_YEAR</span>, for example ' +
+                  '<span class="path">NB-46-X-A_2018</span> — no suffix, no version tag.</dd>' +
+                  '<dt>Images</dt><dd>' + num(BUILT) + ', one per delivered cell-year.</dd>')
+            )
+          )
+        ),
+        h(DS.Card, { title: 'Reading the bands' },
+          h('div', { className: 'card-body justify' },
+            h(DS.AttributeList, {
+              items: [
+                { icon: 'FileText', label: 'docs/collection_description.txt — what every band means' },
+                { icon: 'Ruler', label: 'docs/band_value_ranges.md — scaling and valid ranges per band' },
+                { icon: 'FileCheck2', label: 'docs/band_and_property_contract.md — the v2 band contract' },
+                { icon: 'Map', label: 'docs/viewer_year_slider.js — Code Editor viewer, year by year' },
+                { icon: 'GitCompare', label: 'docs/viewer_v1_v2_compare.js — v1 against v2, side by side' }
+              ]
+            })
+          )
+        )
+      ),
+      h('div', { className: 'footer' },
+        h('span', { className: 't-note ink-second' },
+          'Figures as of 22 September 2026, read from the production collection and the Earth Engine ' +
+          'operations log. Cell-year totals: ' + num(BUILT) + ' delivered, ' + num(MISSING) +
+          ' not built, ' + num(PLAN) + ' planned.'),
+        h('span', { className: 't-note ink-second' },
+          'MapBiomas India · IOLN Landsat mosaics, collection v2 · built with the MapBiomas design system.')
+      )
+    );
+  }
+
+  function App() {
+    return h(F, null,
+      h(Cover), h(Figures), h(Product), h(Method),
+      h(Coverage), h(NationalGrid), h(Outcome), h(Gallery), h(RunProfile), h(Incident), h(Next), h(Access)
+    );
+  }
+
+  try {
+    ReactDOM.createRoot(document.getElementById('app')).render(h(App));
+    wireCharts();
+  } catch (err) {
+    if (window.console) console.error('[report] render failed', err);
+  }
+})();
+</script>
