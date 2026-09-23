@@ -15,23 +15,54 @@ documento diferente com a mesma finalidade.
 ## Idioma e design
 
 - **Inglês.** O relatório é lido pela equipe internacional; o resto do repo é pt-BR.
-  Números no formato inglês (`10,847` · `95.8%`), datas `22 Sep 2026`.
+  Números no formato inglês (`10,849` · `95.8%`), datas `23 Sep 2026`.
 - **Design system MapBiomas obrigatório**: <https://claude.ai/artifact/79QHMmzNVuF9NtFFx1Q6DH>.
-  A página carrega o bundle real (`ds/bundle.css` + `ds/bundle.js` + React 18 + Lucide) e
-  monta componentes de verdade — `Card`, `Panel`, `StatusPill`, `Badge`, `MetaStrip`,
-  `AttributeList`, `InfoBanner`, `LucideIcon`. Não reimplementar nenhum deles.
-- Consequências que já custaram tempo, não reabrir:
-  - **Open Sans, quatro tamanhos** (18/16/14/12), line-height 1,5 sempre. **Não existe
-    escala de heading**: título é `body-large-strong`. Nada acima de 18px.
-  - **Um acento só**, `#43798A` (`--color-primary-700`). Rampas temáticas
-    (`color-green-vegetation-*` etc.) são dado — só mapa, legenda e gráfico.
-  - Tema **claro apenas**: o design system não documenta modo escuro.
-  - Fundo da página `--color-neutral-200`, superfícies brancas. Sombra só em `Panel`.
-  - **Parágrafos justificados**, com hifenização, ocupando a coluna inteira (1100px).
-    Última linha à esquerda (`text-align-last`). Tabelas, legendas e rótulos ficam à
-    esquerda — justificar dado em coluna estreita abre buracos.
-  - Todo `<img>` precisa de `height: auto`, senão o atributo `height` vira altura
-    definitiva e anula o `aspect-ratio`.
+
+### A camada de relatório (desde 2026-09-23)
+
+O design system ganhou uma **camada de relatório**, explicitamente *fora da plataforma*,
+e o relatório foi reconstruído sobre ela. **Não voltar a montar isso à mão.**
+
+| Papel | Componente |
+|---|---|
+| Barra do topo | `ReportBar` (marca, título, navegação) |
+| Coluna de leitura | `ReportPage` — **960px**, não 1100 |
+| Cada assunto | `ReportSection` (`eyebrow`, `title`, `level` 1–3, `lead`, `id`) |
+| Resumo numérico | `MetricPanel` |
+| Ordem do pipeline | `StepFlow` |
+| Tabelas | `CompareTable` (aceita pílula dentro da célula) |
+| Pendências | `RiskList` |
+| Ressalvas | `NoteBox` (`tone: 'neutral'` para nota de método) |
+| Figura numerada | `ReportFigure` |
+| Composição de um total | `StackedBar` (≤5 fatias) |
+| Comparar magnitudes | `CompareBars` (≤5–6 barras) |
+
+Regras que vêm junto:
+
+- **Existe escala de heading fora da plataforma**: `display` 48 · `heading-1` 40 ·
+  `heading-2` 32 · `heading-3` 24 · `heading-4` 20, mais `lead` 20/30. O antigo
+  "nada acima de 18px" vale **só para a plataforma**. Um `h1` por documento — o
+  `ReportSection` com `level: 1` é a abertura, e só ela.
+- **Não passar `color` para os gráficos.** A ordem categórica é fixa em `REPORT_SERIES`
+  (recifes, vegetação, agricultura, mineração, fogo), validada nos dois temas.
+  Legenda e rótulo direto são obrigatórios.
+- **Tema escuro existe** e é da camada de relatório: aplicado com `data-theme="dark"`
+  na raiz — exatamente o que o host de artefato faz. Ver a armadilha do `tokens.css`.
+- Dentro de card, painel ou passo o texto volta para os estilos `body-*`.
+- `<code>` já é estilizado pela camada; não inventar uma classe de caminho de asset.
+
+### Continuam valendo
+
+- **Um acento só**, `--color-action-bg`. Rampas temáticas são dado — mapa, legenda, gráfico.
+- **Parágrafos justificados**, com hifenização, ocupando a coluna. Última linha à
+  esquerda (`text-align-last`). Tabelas, legendas e rótulos ficam à esquerda.
+- Todo `<img>` precisa de `height: auto`, senão o atributo `height` vira altura
+  definitiva e anula o `aspect-ratio`.
+- A coluna de rótulo do `CompareBars` tem **150px**: nota mais longa que ~22 caracteres
+  passa por baixo da barra.
+- O seletor de tema do `ReportBar` tem rótulos fixos em português (`Claro`/`Escuro`) e
+  não sabe do `prefers-color-scheme`. Num relatório em inglês, passar `themes: false` —
+  o host do artefato já controla o tema.
 
 ## As seções, nesta ordem
 
@@ -152,12 +183,20 @@ reintroduzir a história de "cena específica" numa revisão futura.
 cd india && source .venv/bin/activate
 
 # 1. imagens (Earth Engine) — escreve em <dir>/img/
-python docs/make_report_thumbs.py
+python docs/make_report_thumbs.py --out <dir>
 
-# 2. arquivos do design system — copiar do artefato do design system para <dir>/ds/
-#    (bundle.css, bundle.js, react.js, react-dom.js, lucide.js)
+# 2. arquivos do design system para <dir>/ds/ — copiar do artefato:
+#    components/bundle.css, components/bundle.js,
+#    components/lib/react.production.min.js   -> ds/react.js
+#    components/lib/react-dom.production.min.js -> ds/react-dom.js
+#    components/lib/lucide.min.js             -> ds/lucide.js
 
-# 3. o arquivo único versionado
+# 3. o tokens.css — GERADO do tokens.json, não copiado (ver armadilha abaixo)
+python docs/make_ds_tokens.py \
+    --tokens <cópia do design system>/project/tokens.json \
+    --out    <dir>/ds/tokens.css
+
+# 4. o arquivo único versionado
 python docs/build_report.py \
     --src    docs/delivery_report.html \
     --assets <dir> \
@@ -168,6 +207,24 @@ Para republicar o artefato: publicar `delivery_report.html` como página junto d
 e `img/`, **com a URL existente**, para não criar um artefato novo.
 
 ### Armadilhas do build
+
+- **O `tokens.css` publicado pelo design system está desatualizado.** Ele é gerado pela
+  página do design system e, na versão `1790196341-9f29`, não tem bloco
+  `[data-theme="dark"]` nem as classes da escala de títulos, embora o `tokens.json`
+  defina valor escuro para 86 tokens e o grupo inteiro de títulos. Quem inlinar o
+  `tokens.css` publicado recebe um relatório que não escurece e sem título acima de 18px.
+  Por isso `docs/make_ds_tokens.py` gera o arquivo a partir do `tokens.json`.
+  **Apagar esse script no dia em que o design system republicar um `tokens.css` atual.**
+- **O `bundle.css` deixou de carregar as cores.** Desde essa versão ele traz só a
+  tipografia, o global e as classes da camada de relatório; cor, espaço e forma moram no
+  `tokens.css`. A página precisa dos **dois**.
+- **Os aliases do `tokens.json` usam `{nome}`**, que não é CSS: o gerador converte para
+  `var(--nome)`. Sem isso, `--bg-page` e `--text-primary` saem inválidos e a página perde
+  fundo e cor de texto.
+- **O host de artefato não carimba nada quando o tema do leitor é "system"** — só o
+  `prefers-color-scheme` distingue. O design system só chaveia por `[data-theme="dark"]`,
+  então o gerador emite o bloco escuro uma segunda vez dentro de
+  `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { … } }`.
 
 - **Servir sempre com `charset=utf-8`.** O bundle do design system tem faixas
   não-ASCII dentro de expressões regulares; decodificado como latin-1 o navegador
