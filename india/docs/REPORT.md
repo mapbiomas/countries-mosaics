@@ -57,18 +57,21 @@ documento diferente com a mesma finalidade.
 | Número | Valor | Fonte |
 |---|---|---|
 | Plano | 11.320 = 283 × 40 | `pipeline/config.py` |
-| Entregues | 10.847 (95,8%) | `scripts/monitor_status.py` → `listAssets` da coleção |
-| Não construídos | 473 | `11.320 − entregues` |
+| Entregues | 10.849 (95,84%) | `scripts/monitor_status.py` → `listAssets` da coleção |
+| Não construídos | 471 | `11.320 − entregues` |
 | Por ano | tabela 1986–2025 | `docs/run_yearly_stats.txt` |
 | Gaps de arquivo | 463 | `docs/entrega_dados_relatorio.md` |
 | Bug de física | 8 | idem — `NC-43-Y-C` (1989, 2000, 2010), `NC-44-Y-C_1989`, `NG-46-Z-D_1986`, `NH-44-X-C_1987`, `NI-43-V-C_1986`, `NI-44-Y-D_1988` |
-| Travados | 2 | `NH-44-V-A_2021`, `NI-43-Z-D_2019` |
-| Incidente | mediana ~41 min; 6–47h; 28/50 slots; 50→22 mosaicos/h; 69/71; 6h→48h | `docs/stuck_mosaics_report.md` |
+| Travados | **0** | relançados 2026-09-22 com fila vazia, concluíram os dois |
+| Incidente | mediana ~41 min; 6–47h; 28/50 slots; 50→22 mosaicos/h; **71/71**; 6h→48h | `docs/stuck_mosaics_report.md` |
+| Relançamento final | `NH-44-V-A_2021` 3h40 / 398.599 EECU · `NI-43-Z-D_2019` 11h30 / 418.396 EECU | 2026-09-22, fila vazia |
 | Teste decisivo | `NG-43-X-D_2017`, 250 grânulos, 1,8h, ~74 EECU/s vs 13–21 sob contenção | idem |
 | Vazão diária | 18 dias (4–21 set 2026), pico 1.225, mediana 620/dia, 26,09 TB, 586.791 cenas | `docs/run_daily_throughput.csv` |
 
-> **Atenção:** o `CLAUDE.md` já disse "471 gaps", que não fecha contra 11.320.
-> A conta que fecha é **463 + 8 + 2 = 473**. Usar essa.
+> **Atenção:** a conta que fecha é **463 + 8 = 471** (desde 2026-09-23, quando as duas
+> células "travadas" foram relançadas e concluíram). O `CLAUDE.md` chegou a dizer "471
+> gaps" quando o total era 473 — coincidência de número, conta errada. Conferir sempre
+> que `entregues + gaps + bloqueadas = 11.320`.
 
 ## As imagens
 
@@ -128,6 +131,20 @@ Números que saíram daí e que servem para planejar (estão no card "Planning t
 O gráfico marca a **janela de travamento (6–7 set)** com uma faixa `color-warning-200`
 desenhada **antes** das colunas — se for desenhada depois, tinge as duas barras que ela
 deveria destacar.
+
+## Não repetir: "EECU congelado" não é travamento
+
+O relatório e o `CLAUDE.md` afirmavam que duas células travavam por uma cena específica,
+com o EECU congelando a 44% e 73%. **As duas eram falsas.** Relançadas com fila vazia em
+2026-09-22, concluíram: 3h40 e 11h30, ~400k EECU cada. As porcentagens antigas eram
+frações de um total que ninguém tinha medido.
+
+E no relançamento bem-sucedido, `NI-43-Z-D_2019` ficou **1,2 h parado em 412.065 EECU** —
+14 leituras de 5 min sem mover — e depois terminou. O contador anda em degraus.
+
+Consequência para o texto do relatório: a seção Incident precisa dizer que **as 71 eram
+contenção de fila, sem exceção**, e que a taxa de travamento real do pipeline é zero. Não
+reintroduzir a história de "cena específica" numa revisão futura.
 
 ## Reconstruir
 

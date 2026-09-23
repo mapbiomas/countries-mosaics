@@ -15833,8 +15833,8 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
     [2001, 283], [2002, 283], [2003, 283], [2004, 283], [2005, 283],
     [2006, 283], [2007, 283], [2008, 283], [2009, 283], [2010, 280],
     [2011, 283], [2012, 283], [2013, 283], [2014, 283], [2015, 283],
-    [2016, 283], [2017, 283], [2018, 283], [2019, 282], [2020, 283],
-    [2021, 282], [2022, 283], [2023, 283], [2024, 283], [2025, 283]
+    [2016, 283], [2017, 283], [2018, 283], [2019, 283], [2020, 283],
+    [2021, 283], [2022, 283], [2023, 283], [2024, 283], [2025, 283]
   ];
 
   var BUILT = BUILT_BY_YEAR.reduce(function (a, r) { return a + r[1]; }, 0); // 10,847
@@ -15847,9 +15847,7 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
     { k: 'Archive gap', n: 463, tone: 'inactive',
       w: 'No usable Landsat granule exists for that cell-year. Skipped as an honest gap, not a failure.' },
     { k: 'Blocked — empty overpass table', n: 8, tone: 'pending',
-      w: '1–6 granules present, but the 6S overpass table comes back empty and the topographic step raises NoneType has no len().' },
-    { k: 'Stalled export', n: 2, tone: 'failed',
-      w: 'EECU accounting freezes mid-export at 44% and 73%. Scene-specific; under investigation.' }
+      w: '1–6 granules present, but the 6S overpass table comes back empty and the topographic step raises NoneType has no len(). The only defect still holding images back.' }
   ];
 
   var STEPS = [
@@ -15920,10 +15918,14 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
     ['09-14',  750, 2711, 1962.27], ['09-15', 1131,  311, 2830.46],
     ['09-16', 1161,   53, 2346.79], ['09-17',  641,    0, 1297.83],
     ['09-18',    3,    4,    5.91], ['09-19',   13,   44,   28.10],
-    ['09-20',   31,    0,   55.60], ['09-21',    1,    0,    3.56]
+    ['09-20',   31,    0,   55.60], ['09-21',    1,    0,    3.56],
+    ['09-22',    1,    2,    2.87], ['09-23',    1,    0,    3.66]
   ];
-  var RUN_TB = 26.09, RUN_SCENES = 586791, PEAK_DAY = 1225, MEDIAN_DAY = 620;
-  var GB_PER_MOSAIC = 2.40;
+  var RUN_TB = 26.09, RUN_SCENES = 587051, PEAK_DAY = 1225;
+  // The rate worth planning with is the production phase, not the calendar: the
+  // straggler tail delivers one or two a day and would halve any median.
+  var BULK_DAYS = 14, BULK_DONE = 10799, BULK_RATE = 771;
+  var GB_PER_MOSAIC = 2.41;
 
   var num = function (n) { return n.toLocaleString('en-US'); };
 
@@ -16197,7 +16199,7 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
         h(DS.Badge, { tone: 'custom' }, 'v2'),
         h(DS.MetaStrip, {
           state: { label: 'National run closed', tone: 'active', icon: 'CircleCheck' },
-          items: ['22 Sep 2026', num(BUILT) + ' of ' + num(PLAN) + ' cell-years', 'collection mosaics-2']
+          items: ['23 Sep 2026', num(BUILT) + ' of ' + num(PLAN) + ' cell-years', 'collection mosaics-2']
         })
       ),
       h('div', { className: 'prose justify' },
@@ -16206,9 +16208,9 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
             '<strong>' + YEARS + ' phenological years</strong> — <strong>' + num(BUILT) +
             ' were built and written to the production collection</strong>.</p>' +
             '<p>The ' + MISSING + ' that were not are accounted for one by one: ' + 463 +
-            ' are archive gaps where no usable Landsat granule exists, 8 are blocked by a single ' +
-            'guard missing from the topographic step, and 2 are exports that stall inside Earth Engine. ' +
-            'None of them is an unexplained loss.</p>')
+            ' are archive gaps where no usable Landsat granule exists, and 8 are blocked by a single ' +
+            'guard missing from the topographic step. None of them is an unexplained loss, and none ' +
+            'of them is a mosaic that failed to build.</p>')
       ),
       h('div', { className: 'meter' },
         h('div', { className: 'track', role: 'img', 'aria-label': PCT + '% of the plan delivered' },
@@ -16388,8 +16390,8 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
             'survived. 1987 and 1988 recover to about 220, and from 1989 the series is above 95% every ' +
             'year but 1998.</p>' +
             '<p>From 1999 onward the grid is essentially complete: <strong>' + complete + ' of the forty years ' +
-            'deliver all ' + CELLS + ' cells</strong>, and the remaining shortfalls are one or three cells ' +
-            'held back by the two defects described below, not by the archive.</p>')
+            'deliver all ' + CELLS + ' cells</strong>. Only 2000 and 2010 fall short after 1999, by one and ' +
+            'three cells, and those are held back by the topographic defect below, not by the archive.</p>')
       )
     );
   }
@@ -16514,9 +16516,10 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
         'be reconstructed day by day after the fact. These are the numbers to plan the next big ' +
         'reprocessing against — they are measured, not estimated.'),
       h('div', { className: 'figures' },
-        figureCard(days + ' days', 'Calendar span', '4 to 21 September 2026, start to last straggler'),
+        figureCard(days + ' days', 'Calendar span', '4 to 23 September 2026, start to last straggler'),
+        figureCard(num(BULK_RATE) + '/day', 'Production rate', 'average over the ' + BULK_DAYS +
+          ' days that delivered ' + num(BULK_DONE) + ' of them'),
         figureCard(num(PEAK_DAY), 'Best day', '8 September — about 51 mosaics an hour sustained'),
-        figureCard(num(MEDIAN_DAY), 'Median day', 'the rate to plan with, not the peak'),
         figureCard(RUN_TB + ' TB', 'Written', num(RUN_SCENES) + ' Landsat scenes consumed')
       ),
       h(DS.Panel, { title: 'Mosaics finished per day, and the cumulative total', padding: 24 },
@@ -16565,7 +16568,7 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
         raw('<p>The shape is not a smooth ramp, and it was never going to be. The queue has a ceiling ' +
             'per account, so the run was fed in <strong>sittings</strong>: the tall queued days — ' +
             '2,394 on the 8th, 2,711 on the 14th — are someone refilling it, and the days that follow ' +
-            'are that backlog draining. Delivery is steady around ' + num(MEDIAN_DAY) +
+            'are that backlog draining. Delivery averages ' + num(BULK_RATE) +
             ' a day whenever the queue has work in it.</p>' +
             '<p><strong>The two flat days are the incident below.</strong> On 5 September the run ' +
             'delivered 1,131 mosaics; on the 6th it delivered 70, and on the 7th 139. Nothing was ' +
@@ -16573,21 +16576,25 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
             'cancelled at six hours. The 8th, after the threshold was raised, is the best day of the ' +
             'whole run.</p>' +
             '<p><strong>' + coreDone.toLocaleString('en-US') + ' of ' + num(BUILT) + ' landed in the first ' +
-            core.length + ' days.</strong> The four-day tail is 48 stragglers — re-queued failures and ' +
-            'the cells that needed a second attempt. Plan the bulk, then plan a tail.</p>')
+            core.length + ' days.</strong> Everything after is a tail of 50 stragglers at one or two a ' +
+            'day — re-queued failures, and the last two cells, which took until the 23rd. Plan the ' +
+            'bulk, then plan a tail: the tail is cheap in machines and expensive in calendar.</p>')
       ),
       h(DS.Card, { title: 'Planning the next one' },
         h('div', { className: 'card-body' },
           h(DS.AttributeList, {
             items: [
               { icon: 'CalendarClock', label: 'A full national reprocess, all ' + num(PLAN) +
-                ' images: about 18 days at the median rate — the run just closed is the benchmark' },
-              { icon: 'CalendarPlus', label: 'One new year, 283 cells: half a day and roughly 0.7 TB' },
+                ' images: about 15 days of production at ' + num(BULK_RATE) +
+                ' a day, and 20 calendar days once the tail is counted' },
+              { icon: 'CalendarPlus', label: 'One new year, 283 cells: well under a day and roughly 0.7 TB' },
               { icon: 'HardDrive', label: 'Storage: ' + GB_PER_MOSAIC.toFixed(1) +
                 ' GB a mosaic on average, so budget by cell-years, not by year' },
               { icon: 'Layers', label: 'About 54 Landsat scenes go into each delivered image' },
               { icon: 'TriangleAlert', label: 'Do not plan against the peak: 1,225 happened once, ' +
-                'with a drained queue and nothing else competing' }
+                'with a drained queue and nothing else competing' },
+              { icon: 'Hourglass', label: 'A single heavy cell can run 11 hours on its own. Set the ' +
+                'auto-cancel well beyond that, and never cancel on a frozen EECU counter' }
             ]
           })
         )
@@ -16638,19 +16645,26 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
             '<strong>69 of 71 completed</strong>, at about two hours each. The auto-cancel threshold was ' +
             'raised from 6 to 48 hours, and the run was finished in sittings rather than as one ' +
             'continuous queue.</p>' +
-            '<p>The rule that came out of it: wall-clock does not tell you whether an export is stuck. ' +
-            'Rising EECU means it is computing and should be left alone; EECU frozen for hours is a real ' +
-            'stall. The two remaining failures are the frozen kind.</p>')
+            '<p>Two cells survived that first rescue and were written up as genuinely stalled, frozen ' +
+            'part-way through by some specific scene. <strong>They were not.</strong> Relaunched against an ' +
+            'empty queue on 22 September, both finished: 3h40m and 11h30m, about 400,000 EECU each. The ' +
+            '“44% and 73%” in the original write-up were fractions of a total nobody had measured — the ' +
+            'real cost of these two is around 400,000, so they were at roughly 53% and 83%, simply at the ' +
+            'slow end of the distribution.</p>' +
+            '<p>Which corrects the rule, too. Wall-clock does not tell you whether an export is stuck, but ' +
+            '<strong>neither does a frozen EECU counter</strong>: on the successful re-run one of these two ' +
+            'sat at 412,065 for an hour and twelve minutes without moving, then finished. The counter ' +
+            'advances in steps, and a plateau of half an hour is ordinary. <strong>All 71 held cells were ' +
+            'queue contention. The pipeline\u2019s real stall rate is zero.</strong></p>')
       )
     );
   }
 
   function Next() {
     var ITEMS = [
-      ['Two genuinely stalled exports', 'NH-44-V-A_2021 and NI-43-Z-D_2019 freeze at 44% and 73% of their ' +
-        'expected EECU. Find the scene that stalls them.', 'failed', 'Open'],
       ['The empty-overpass guard', 'Treat an empty 6S table as “no correction available” in topo_physics. ' +
-        'Releases eight cell-years at no cost.', 'pending', 'Ready to fix'],
+        'Releases eight cell-years at no cost, and is now the only defect between the collection and ' +
+        '10,857 of 11,320.', 'pending', 'Ready to fix'],
       ['Quantify the UNCORRECTED passes', 'Measure the illumination bias left in the L5/L7 passes that ' +
         'shipped without topographic correction.', 'pending', 'To assess'],
       ['Retire the v1 collection', 'INDIA/mosaics-1 still holds about 47 TB. It is a candidate for removal ' +
@@ -16658,7 +16672,8 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
     ];
     return h('section', { id: 'next' },
       head('Open items', 'What is left, and what it costs',
-        'None of these blocks use of the delivered collection.'),
+        'None of these blocks use of the delivered collection. The two exports written up as stalled ' +
+        'were re-run on 22 September and both delivered, so that item is closed.'),
       h('div', { className: 'items' },
         ITEMS.map(function (it) {
           return h('div', { className: 'item', key: it[0] },
@@ -16705,7 +16720,7 @@ __ds_ns.ThemeCard = __ds_scope.ThemeCard;
       ),
       h('div', { className: 'footer' },
         h('span', { className: 't-note ink-second' },
-          'Figures as of 22 September 2026, read from the production collection and the Earth Engine ' +
+          'Figures as of 23 September 2026, read from the production collection and the Earth Engine ' +
           'operations log. Cell-year totals: ' + num(BUILT) + ' delivered, ' + num(MISSING) +
           ' not built, ' + num(PLAN) + ' planned.'),
         h('span', { className: 't-note ink-second' },

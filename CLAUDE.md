@@ -133,11 +133,24 @@ Um export "preso" é um `RUNNING` muito além da mediana (~41 min). O divisor de
 o **EECU**, não o wall-clock:
 
 - `batchEecuUsageSeconds` **subindo** → está computando (lento, mas saudável). Deixar rodar.
-- EECU **congelado** por horas → travado de verdade (estagna no meio do export). Cancelar.
+- EECU parado → **não conclui nada**. Ver o aviso abaixo.
+
+> **Corrigido em 2026-09-23 — EECU congelado NÃO é sinal de travamento.**
+> Esta seção dizia "EECU congelado por horas → travado de verdade. Cancelar." Está errado
+> e custou duas células. No relançamento com fila vazia, `NI-43-Z-D_2019` ficou **1,2 h
+> parado em 412.065 EECU** (14 polls de 5 min sem mover) e depois **concluiu normalmente**.
+> Patamares de 30–60 min no meio do export são comuns; o contador é atualizado em degraus,
+> não continuamente. Não cancelar por EECU parado — só por wall-clock absurdo, e mesmo
+> assim preferindo esperar. **O único cancelamento justificado é o que libera fila para
+> outra coisa mais urgente.**
 
 Thresholds usados: **>8h** marca straggler; **>48h** cancela (auto-cancel). Medidas reais:
-`NG-43-X-D_2017` completou em 1,8h com ~479k EECU; `NH-44-V-A_2021` estagnou em ~211k (44%);
-`NI-43-Z-D_2019` estagnou em ~348k (73%). Consulta direta de uma operação:
+`NG-43-X-D_2017` completou em 1,8h com ~479k EECU. As duas "travadas" completaram no
+relançamento de 2026-09-22 com fila vazia: `NH-44-V-A_2021` em **3h40 / 398.599 EECU** e
+`NI-43-Z-D_2019` em **11h30 / 418.396 EECU**. Os números antigos ("estagnou em 211k (44%)",
+"348k (73%)") eram leituras parciais contra um denominador que ninguém tinha: o custo real
+das duas é ~400k, então 211k era ~53% e 348k ~83% — as duas estavam simplesmente no fim
+lento da distribuição. Consulta direta de uma operação:
 
 ```python
 ee.Initialize(project='mapbiomas-mosaics')
@@ -178,20 +191,22 @@ em memória, não um `getAsset` por cell-year. O driver `run_production.run()` j
   ANTHROPIC_AUTH_TOKEN` + reiniciar + `/login` (ou colar o conteúdo manualmente).
 - **Zero-scene**: cell-year sem grânulos usáveis é pulado como "honest gap" (não é erro).
 
-## Estado da rodada nacional (2026-09-22)
+## Estado da rodada nacional (2026-09-23)
 
-Coleção `mosaics-2`, 10.847/11.320 construídos (**95,8%**).
+Coleção `mosaics-2`, 10.849/11.320 construídos (**95,84%**).
 
 | Desfecho | Qtd | Detalhe |
 |---|---|---|
-| Construídos | 10.847 | 95,8% |
+| Construídos | 10.849 | 95,84% |
 | Gaps de arquivo | 463 | pré-2000 sem cenas (zero-scene); 1986 é o pior (30/283) |
-| Travados reais | 2 | `NH-44-V-A_2021`, `NI-43-Z-D_2019` — estagnam no export (EECU congela) |
 | Bug de física | 8 | overpass table vazia → `NoneType has no len()` (ver abaixo) |
+| Travados reais | 0 | resolvido em 2026-09-23 — ver abaixo |
 
-> Os 473 não construídos = **463 + 8 + 2**. Este arquivo já disse "471 gaps", que não
-> fecha contra 11.320; a conta correta é a da tabela e a de
-> `india/docs/entrega_dados_relatorio.md`.
+> Os 471 não construídos = **463 + 8**. Não há mais nenhuma célula "travada":
+> `NH-44-V-A_2021` e `NI-43-Z-D_2019` foram relançadas com a fila vazia em 2026-09-22 e
+> **concluíram as duas**. Nunca houve cena problemática — era a mesma contenção de fila
+> das outras 69, só que no extremo lento da distribuição. 2019 e 2021 agora têm as 283
+> células; **25 dos 40 anos estão completos** (eram 23).
 
 ### Incidente "travamento de export" (causa raiz medida)
 - Exports ficavam `RUNNING` 6–47h (mediana ~41 min). Pior caso: 28/50 slots parados.
@@ -202,7 +217,8 @@ Coleção `mosaics-2`, 10.847/11.320 construídos (**95,8%**).
 - `shardSize=32` e `cloud<60/40/30` NÃO resolveram (limite no grafo; 182 grânulos ainda
   estouram e tabelas overpass/witness seguem a 250).
 - **Resolução:** relançar com fila vazia → 69/71 completaram em ~2h. Auto-cancel subiu
-  de 6h → 48h.
+  de 6h → 48h. As 2 restantes completaram no relançamento de 2026-09-22 (3h40 e 11h30):
+  **71/71**. A causa foi contenção de fila do começo ao fim.
 
 ### Bug de física (8 células bloqueadas)
 `NC-43-Y-C` (1989,2000,2010), `NC-44-Y-C_1989`, `NG-46-Z-D_1986`, `NH-44-X-C_1987`,
@@ -212,8 +228,10 @@ tratar lista vazia como "sem correção" — destravaria as 8 de graça. Ainda N
 
 ## Pendências / follow-ups
 
-1. **2 travadas reais** — investigar a cena específica que estagna o export a 44%/73%.
-2. **8 células do bug de física** — fix do `topo_physics` (overpass vazio).
+1. ~~2 travadas reais~~ — **feito (2026-09-23)**: relançadas com fila vazia, concluíram
+   as duas. Não havia cena específica a investigar.
+2. **8 células do bug de física** — fix do `topo_physics` (overpass vazio). Agora é a
+   única coisa entre a coleção e 10.857/11.320.
 3. **`WARNING ... ship UNCORRECTED`** — alguns passes L5/L7 sem linha na tabela 6S
    (topo não aplicado) em certas células/anos; checar impacto de qualidade.
 4. **Espaço** — liberamos ~25 TB (Indonesia/DRC/MA-legado); `.../INDIA/mosaics-1` (v1,

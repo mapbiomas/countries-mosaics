@@ -13,22 +13,38 @@ O "travamento" era **contencao de fila**, nao bug: com a fila cheia as celulas d
 - `cloud<60/40/30` **nao resolveu**: 215/196/182 granulos ainda estouram o teto de memoria interativo, e as tabelas pre-computadas (overpass/witness) seguem a 250.
 - `shardSize=32` **nao resolveu**: o limite e no grafo, nao no tile do export.
 
-## Residuo: 2 travamentos reais (cena-especifico)
+## ~~Residuo: 2 travamentos reais (cena-especifico)~~ — RETRATADO em 2026-09-23
 
-Alem da contencao, ha um residuo de ~2 celulas que **estagnam no meio do export** (EECU congelado), provavelmente por uma cena especifica:
+**Nao havia travamento real, e nao havia cena especifica.** As duas celulas foram
+relancadas em 2026-09-22 com a fila vazia e **concluiram as duas**:
 
-- `NH-44-V-A_2021` (245 granulos): estagnou a ~44% (EECU congelado em 211k por ~10h).
-- `NI-43-Z-D_2019` (251 granulos): estagnou a ~73% (EECU congelado em 348k por ~13h).
+| celula | resultado | tempo | EECU |
+|---|---|---|---|
+| `NH-44-V-A_2021` (245 granulos) | SUCCEEDED | 3h40 | 398.599 |
+| `NI-43-Z-D_2019` (251 granulos) | SUCCEEDED | 11h30 | 418.396 |
 
-Taxa: **2 / 11.320 = 0,02%**.
+O que esta secao dizia antes, e por que estava errado:
+
+- *"estagnou a ~44%"* / *"~73%"* — as porcentagens foram calculadas contra um
+  denominador que ninguem tinha. O custo real das duas e ~400k EECU, entao os 211k e
+  348k observados eram ~53% e ~83%: as duas estavam **no fim lento da distribuicao**,
+  nao paradas.
+- *"EECU congelado"* — patamar nao e travamento. No relancamento, `NI-43-Z-D_2019`
+  ficou **1,2 h parado em 412.065 EECU** (14 leituras de 5 min sem mover) e depois
+  concluiu. O contador anda em degraus; patamares de 30-60 min sao normais.
+
+**Conclusao corrigida: 71 de 71 celulas travadas eram contencao de fila.** A taxa de
+travamento real do pipeline e **0 / 11.320**. O unico requisito e fila vazia e
+auto-cancel longo o bastante para nao cortar trabalho em andamento.
 
 ## Estado final
 
 | | Qtd |
 |---|---|
-| Concluido | **10.847 / 11.320 (95,8%)** |
-| Gaps de arquivo (pre-2000, sem dados) | 471 |
-| Travadas reais (nao resolvidas) | 2 |
+| Concluido | **10.849 / 11.320 (95,84%)** |
+| Gaps de arquivo (pre-2000, sem dados) | 463 |
+| Bloqueadas pelo bug de overpass vazio | 8 |
+| Travadas reais (nao resolvidas) | **0** |
 
 ## Lista das 71 celulas-anos travadas (historico)
 
