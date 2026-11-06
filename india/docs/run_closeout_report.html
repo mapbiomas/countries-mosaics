@@ -1,0 +1,368 @@
+<title>India Mosaic Production Close-out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1310;
+    --surface: #121b16;
+    --surface-2: #18241e;
+    --ink: #e9efeb;
+    --muted: #96a69d;
+    --faint: #6b7a72;
+    --line: #26342d;
+    --accent: #4cc38a;
+    --accent-strong: #2f9e68;
+    --accent-ink: #0b2a1c;
+    --warn: #e0a458;
+    --crit: #e06b5f;
+    --good: #4cc38a;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f3f6f4;
+      --surface: #ffffff;
+      --surface-2: #eef2ef;
+      --ink: #14201a;
+      --muted: #51615a;
+      --faint: #7b8a82;
+      --line: #dbe3de;
+      --accent: #2f9e68;
+      --accent-strong: #1e7a4f;
+      --accent-ink: #eafaf1;
+      --warn: #b47820;
+      --crit: #c54a3e;
+      --good: #2f9e68;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --surface-2: #eef2ef;
+    --ink: #14201a;
+    --muted: #51615a;
+    --faint: #7b8a82;
+    --line: #dbe3de;
+    --accent: #2f9e68;
+    --accent-strong: #1e7a4f;
+    --accent-ink: #eafaf1;
+    --warn: #b47820;
+    --crit: #c54a3e;
+    --good: #2f9e68;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1310;
+    --surface: #121b16;
+    --surface-2: #18241e;
+    --ink: #e9efeb;
+    --muted: #96a69d;
+    --faint: #6b7a72;
+    --line: #26342d;
+    --accent: #4cc38a;
+    --accent-strong: #2f9e68;
+    --accent-ink: #0b2a1c;
+    --warn: #e0a458;
+    --crit: #e06b5f;
+    --good: #4cc38a;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px 88px;
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 32px 16px 56px; }
+  }
+
+  /* band strip */
+  .bands {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px 0 0;
+  }
+  .bands span { flex: 1; }
+  .bands span:nth-child(1) { background: #3a6ea5; }  /* blue */
+  .bands span:nth-child(2) { background: #4caf7d; }  /* green */
+  .bands span:nth-child(3) { background: #c0554a; }  /* red */
+  .bands span:nth-child(4) { background: #9c3a4a; }  /* nir */
+  .bands span:nth-child(5) { background: #7a4a8a; }  /* swir1 */
+  .bands span:nth-child(6) { background: #54366a; }  /* swir2 */
+  .bands span:nth-child(7) { background: #8a6a4a; }  /* tir */
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(34px, 5.4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .meta {
+    margin-top: 22px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+  .meta b { color: var(--muted); font-weight: 500; }
+
+  /* key figures */
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 44px 0 0;
+  }
+  .figure {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+  }
+  .figure .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .figure .num em { font-style: normal; font-size: 17px; color: var(--muted); }
+  .figure .lbl {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .figure.accent { border-color: var(--accent); }
+  .figure.accent .num { color: var(--accent); }
+  .figure.warn { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+  .figure.warn .num { color: var(--warn); }
+  .figure.crit { border-color: color-mix(in srgb, var(--crit) 55%, var(--line)); }
+  .figure.crit .num { color: var(--crit); }
+
+  /* sections */
+  section { margin-top: 64px; }
+  h2 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 0 0 6px;
+  }
+  .rule {
+    height: 1px;
+    background: var(--line);
+    border: 0;
+    margin: 16px 0 24px;
+  }
+  p { max-width: 68ch; margin: 0 0 14px; color: var(--ink); }
+  p.mut { color: var(--muted); }
+  strong { font-weight: 600; }
+
+  /* table */
+  .table-scroll { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 500;
+    background: var(--surface-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  td.flag-good { color: var(--good); font-weight: 500; }
+  td.flag-warn { color: var(--warn); font-weight: 500; }
+  td.flag-crit { color: var(--crit); font-weight: 500; }
+  .cellid { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+
+  /* callout */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.crit { border-left-color: var(--crit); }
+  .callout .t { font-weight: 600; margin-bottom: 4px; }
+  .callout p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .pill {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: var(--surface-2);
+  }
+  .pill.g { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); }
+  .pill.w { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
+  .pill.c { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 40%, var(--line)); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">IOLN · Landsat · India</p>
+    <h1>India Mosaic Production Close-out</h1>
+    <p class="lede">The annual Landsat mosaic run is effectively complete: <strong>10,847 of 11,320 cell-years built (95.8%)</strong>. The remaining 473 are honest archive gaps plus a handful of edge cases — not lost work. This is the story of the run, the "stuck export" incident that slowed it, and what resolved it.</p>
+    <div class="bands" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="meta">
+      <span>Collection <b>mosaics-2</b></span>
+      <span>Grid <b>283 cells × 40 years</b></span>
+      <span>Phenological year <b>Apr → Mar</b></span>
+      <span>Close-out <b>2026-09-22</b></span>
+    </div>
+  </header>
+
+  <section class="figures" aria-label="Key figures">
+    <div class="figure accent">
+      <div class="num">10,847 <em>/ 11,320</em></div>
+      <div class="lbl">mosaics built — 95.8% of the plan</div>
+    </div>
+    <div class="figure">
+      <div class="num">471</div>
+      <div class="lbl">archive gaps — pre-2000 cell-years with no usable scenes</div>
+    </div>
+    <div class="figure warn">
+      <div class="num">2</div>
+      <div class="lbl">exports genuinely stalled mid-run (scene-specific)</div>
+    </div>
+    <div class="figure crit">
+      <div class="num">8</div>
+      <div class="lbl">cells blocked by a physics-table bug (have data, crash on export)</div>
+    </div>
+    <div class="figure">
+      <div class="num">~25 <em>TB</em></div>
+      <div class="lbl">storage freed by retiring legacy collections</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">The incident</p>
+    <h2>Exports appeared to hang for hours</h2>
+    <hr class="rule">
+    <p>Partway through the run, a subset of mosaic exports sat in <span class="pill c">RUNNING</span> for 6 to 47 hours — far past the ~41-minute median — and were cancelled automatically to free queue slots. At its worst this stalled roughly <strong>28 of the 50 running slots</strong>, cutting throughput from ~50 to ~22 mosaics/hour.</p>
+    <p class="mut">The affected cells were scattered across the grid (<span class="cellid">NG-42…</span>, <span class="cellid">NG-43…</span>, <span class="cellid">NH-44…</span>, <span class="cellid">NI-43…</span>), not one region. Early hypothesis — a memory limit in the compositing graph — pointed the wrong way.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Root cause</p>
+    <h2>Queue contention, not a bug</h2>
+    <hr class="rule">
+    <p>The cancelled tasks had been <strong>actively computing</strong>, not stuck. Their <span class="cellid">batchEecuUsageSeconds</span> ranged from 35k to 450k at the moment of cancellation — the signature of healthy work competing for a shared worker pool.</p>
+    <div class="callout">
+      <div class="t">The decisive test</div>
+      <p>A single dense cell (<span class="cellid">NG-43-X-D_2017</span>, 250 granules) that had "hung" completed in <strong>1.8 hours</strong> once the queue was empty — running at ~74 EECU/s versus ~13–21 EECU/s under contention. Same cell, same graph, five times faster.</p>
+    </div>
+    <p class="mut">Two earlier fixes were tested and ruled out: <span class="cellid">shardSize=32</span> (the limit is in the graph, not the tile) and <span class="cellid">cloud&lt;30</span> (only cut 250 → 182 granules, still over the interactive-memory ceiling).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Resolution</p>
+    <h2>Re-launch with an empty queue</h2>
+    <hr class="rule">
+    <p>With the queue drained, the 71 historically-stuck cell-years were re-queued. <strong>69 of 71 completed</strong> — each in roughly two hours, one after another. The six-hour auto-cancel threshold was raised to 48 hours so slow-but-healthy exports were no longer cut off.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Final state</p>
+    <h2>What actually shipped</h2>
+    <hr class="rule">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Outcome</th><th>Count</th><th>Share</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Built successfully</td><td class="num">10,847</td><td class="num">95.8%</td><td class="flag-good">complete</td></tr>
+          <tr><td>Archive gaps (no usable scenes)</td><td class="num">471</td><td class="num">4.2%</td><td class="flag-warn">expected — pre-2000 thin archive</td></tr>
+          <tr><td>Genuinely stalled exports</td><td class="num">2</td><td class="num">&lt;0.1%</td><td class="flag-crit">scene-specific, to investigate</td></tr>
+          <tr><td>Blocked by physics-table bug</td><td class="num">8</td><td class="num">&lt;0.1%</td><td class="flag-crit">fixable — data exists</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Residual items</p>
+    <h2>Two small follow-ups</h2>
+    <hr class="rule">
+    <div class="callout warn">
+      <div class="t">2 stalled exports (0.02%)</div>
+      <p><span class="cellid">NH-44-V-A_2021</span> and <span class="cellid">NI-43-Z-D_2019</span> stall partway through export (EECU freezes at 44% and 73%). Likely a specific scene; worth a targeted look, not urgent.</p>
+    </div>
+    <div class="callout crit">
+      <div class="t">8 cells blocked by a physics bug</div>
+      <p>These cells have 1–6 granules but an empty overpass table, and the topographic-correction step crashes with <span class="cellid">NoneType has no len()</span>. A small guard (treat an empty table as "no correction") would unblock all eight for free.</p>
+    </div>
+    <p class="mut">Both are minor against a 95.8% complete product; neither affects the mosaics already delivered.</p>
+  </section>
+
+  <footer>
+    <span>India annual Landsat mosaic · v2</span>
+    <span>283 CIM cells · 1986–2025</span>
+    <span>Collection 2 Level-2</span>
+  </footer>
+</main>
