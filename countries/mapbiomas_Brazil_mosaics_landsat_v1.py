@@ -22,7 +22,7 @@ from modules.CloudAndShadowMaskC2 import *
 # Prevent Python from writing .pyc files
 sys.dont_write_bytecode = True
 
-# Initialize Google Earth Engine with the MapBiomas Paraguay project
+# Initialize Google Earth Engine with the MapBiomas Brazil in mosaics project
 ee.Initialize(project = "mapbiomas-mosaics")
 
 # Version number for the mask assets
@@ -35,7 +35,6 @@ gridsAsset = 'projects/mapbiomas-workspace/AUXILIAR/cartas'
 assetMasks = "projects/mapbiomas-workspace/AUXILIAR/landsat-mask"
 
 # List of biome names to process (without spaces)
-# Currently only MATAATLANTICA is active, others are commented out
 biomeNames = [
     'AMAZONIA',
     'CAATINGA',
