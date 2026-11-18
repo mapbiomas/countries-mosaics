@@ -1,3 +1,4 @@
+# Brazil mosaics col. 11
 # Import Google Earth Engine and system libraries
 import ee
 import sys
@@ -22,7 +23,7 @@ from modules.CloudAndShadowMaskC2 import *
 sys.dont_write_bytecode = True
 
 # Initialize Google Earth Engine with the MapBiomas Paraguay project
-ee.Initialize(project = "mapbiomas-paraguay")
+ee.Initialize(project = "mapbiomas-mosaics")
 
 # Version number for the mask assets
 versionMasks = '2'
@@ -36,12 +37,12 @@ assetMasks = "projects/mapbiomas-workspace/AUXILIAR/landsat-mask"
 # List of biome names to process (without spaces)
 # Currently only MATAATLANTICA is active, others are commented out
 biomeNames = [
-    # 'AMAZONIA',
-    # 'CAATINGA',
+    'AMAZONIA',
+    'CAATINGA',
     'MATAATLANTICA',
-    # 'CERRADO',
-    # 'PAMPA',
-    # 'PANTANAL',
+    'CERRADO',
+    'PAMPA',
+    'PANTANAL',
 ]
 
 # Version numbers for each biome's processing
